@@ -1,0 +1,5028 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chollar — Spatial Chord Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Noto+Sans+Thai:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      /* ธีมพื้นหลังส้มพาสเทล ตัดกับสีขาว และสีดำเฟดจางๆ */
+      --bg-pastel-orange: #fdeddf;
+      --surface-white: #ffffff;
+      --surface-warm-white: #fffbf7;
+      --surface-soft: #faf6f2;
+      --ink-primary: #262322;
+      --ink-secondary: #5c5550;
+      --ink-muted: #8f867f;
+      --faded-black: rgba(28, 25, 23, 0.78);
+      --faded-black-hover: rgba(28, 25, 23, 0.9);
+      --icon-faded: rgba(28, 25, 23, 0.68);
+      --hairline: rgba(28, 25, 23, 0.08);
+      --hairline-strong: rgba(28, 25, 23, 0.14);
+
+      /* Pastel Orange & Warm Neutral Accents */
+      --peach-tint: #ffedd5;
+      --peach-mid: #fed7aa;
+      --peach-deep: #9a3412;
+      --peach-accent: #ea580c;
+
+      --sand-tint: #f5f2ef;
+      --sand-mid: #e7e2dc;
+      --sand-deep: #44403c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', 'Noto Sans Thai', system-ui, -apple-system, sans-serif;
+    }
+
+    html, body {
+      overflow-x: hidden;
+      width: 100%;
+    }
+
+    /* พื้นหลังหลักธีมส้มพาสเทล */
+    body {
+      background-color: var(--bg-pastel-orange);
+      background-image:
+        radial-gradient(at 10% 8%, rgba(254, 215, 170, 0.85) 0px, transparent 52%),
+        radial-gradient(at 90% 10%, rgba(255, 228, 214, 0.92) 0px, transparent 50%),
+        radial-gradient(at 84% 88%, rgba(253, 186, 116, 0.45) 0px, transparent 52%),
+        radial-gradient(at 14% 90%, rgba(255, 247, 237, 0.9) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--ink-primary);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 14px 52px;
+    }
+
+    body.lock-scroll {
+      overflow: hidden;
+    }
+
+    /* ไอคอนเส้นมินิมอลโทนสีดำเฟดจางๆ */
+    .ui-icon {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.65;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+      opacity: 0.78;
+    }
+
+    .ui-icon-sm {
+      width: 13px;
+      height: 13px;
+    }
+
+    .ui-icon-lg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* การ์ดหลักสีขาวตัดกับพื้นหลังส้มพาสเทล */
+    .atelier-frame {
+      width: 100%;
+      max-width: 1060px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid #ffffff;
+      border-radius: 30px;
+      padding: 20px 22px 26px;
+      box-shadow:
+        0 28px 70px -18px rgba(124, 45, 18, 0.1),
+        0 4px 20px -4px rgba(28, 25, 23, 0.05),
+        inset 0 1px 0 #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* แถบหัวข้อ Editorial Top Bar */
+    .editorial-topbar {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-emblem {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+      border: 1px solid rgba(234, 88, 12, 0.16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--icon-faded);
+      box-shadow: 0 4px 12px rgba(234, 88, 12, 0.08);
+      flex-shrink: 0;
+    }
+
+    .brand-titles h1 {
+      font-size: clamp(1.12rem, 2.8vw, 1.36rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--ink-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .subtitle {
+      font-size: clamp(0.73rem, 2vw, 0.81rem);
+      color: var(--ink-secondary);
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ปุ่มและ Dropdown สไตล์ Chic Minimal */
+    button, select, input[type="text"] {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--hairline-strong);
+      background: var(--surface-white);
+      color: var(--ink-primary);
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 1px 2px rgba(28, 25, 23, 0.03);
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    button:hover, select:hover {
+      border-color: rgba(234, 88, 12, 0.38);
+      background: var(--surface-warm-white);
+      transform: translateY(-1px);
+    }
+
+    input[type="text"]:focus {
+      border-color: rgba(234, 88, 12, 0.5);
+      box-shadow: 0 0 0 3px rgba(254, 215, 170, 0.45);
+      outline: none;
+    }
+
+    /* ปุ่มหลักโทนสีดำเฟดจางๆ */
+    button.primary {
+      background: var(--faded-black);
+      color: #f5f2ef;
+      border: 1px solid rgba(28, 25, 23, 0.15);
+      padding: 8px 18px;
+      box-shadow: 0 8px 20px -6px rgba(28, 25, 23, 0.28);
+    }
+
+    button.primary .ui-icon {
+      color: #e7e2dc;
+      opacity: 0.85;
+    }
+
+    button.primary:hover {
+      background: var(--faded-black-hover);
+      border-color: rgba(28, 25, 23, 0.3);
+      box-shadow: 0 10px 24px -6px rgba(154, 52, 18, 0.25);
+    }
+
+    button.toggle-studio {
+      background: var(--surface-soft);
+      border-color: var(--hairline-strong);
+      color: var(--ink-primary);
+    }
+
+    button.toggle-studio.active {
+      background: var(--peach-tint);
+      border-color: rgba(234, 88, 12, 0.28);
+      color: var(--peach-deep);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* แถบเลือกโหมดการเล่น & เสียงเครื่องดนตรี */
+    .controls {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface-soft);
+      padding: 8px 12px;
+      border-radius: 18px;
+      border: 1px solid var(--hairline);
+    }
+
+    .controls-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+    }
+
+    /* แผง FX & ความนิ่งสไตล์ White Pill Dock */
+    .fx-rack {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-white);
+      border: 1px solid var(--hairline);
+      border-radius: 18px;
+      padding: 9px 14px;
+      gap: 12px;
+      box-shadow: 0 4px 16px -6px rgba(28, 25, 23, 0.04);
+    }
+
+    .fx-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--ink-secondary);
+    }
+
+    .fx-item .ui-icon {
+      color: var(--icon-faded);
+    }
+
+    .fx-item select {
+      padding: 5px 10px;
+      font-size: 0.76rem;
+      background: var(--surface-soft);
+      border-color: var(--hairline);
+    }
+
+    .fx-item input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 64px;
+      height: 5px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #fed7aa, #e7e2dc);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .fx-item input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: rgba(28, 25, 23, 0.82);
+      border: 2px solid #fff7ed;
+      box-shadow: 0 2px 6px rgba(28, 25, 23, 0.22);
+      cursor: pointer;
+      transition: transform 0.12s ease;
+    }
+
+    .fx-item input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .fx-item input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: #44403c;
+      cursor: pointer;
+    }
+
+    .fx-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+      color: var(--peach-deep);
+      background: var(--peach-tint);
+      padding: 2px 7px;
+      border-radius: 999px;
+      min-width: 38px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.72rem;
+    }
+
+    /* =========================================================================
+       กรอบกล้องหลัก (Gallery Viewport)
+       ========================================================================= */
+    .stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 8.2;
+      background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #faf6f2 100%);
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(234, 88, 12, 0.14);
+      box-shadow:
+        0 20px 45px -15px rgba(124, 45, 18, 0.12),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+      transition: border-radius 0.2s ease;
+    }
+
+    .stage.is-fullscreen,
+    .stage:fullscreen {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      height: 100dvh !important;
+      max-width: none !important;
+      aspect-ratio: auto !important;
+      border-radius: 0 !important;
+      border: none !important;
+      z-index: 9999 !important;
+    }
+
+    video, canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+    }
+
+    /* HUD ด้านบนของกล้อง */
+    .hud-top {
+      position: absolute;
+      top: max(12px, env(safe-area-inset-top));
+      left: max(12px, env(safe-area-inset-left));
+      right: max(12px, env(safe-area-inset-right));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .hud-top-right {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      pointer-events: auto;
+      flex-shrink: 0;
+    }
+
+    .badge {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: var(--ink-primary);
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 4px 16px rgba(28, 25, 23, 0.07);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 31vw;
+    }
+
+    .badge.filter-badge {
+      font-family: 'JetBrains Mono', 'Noto Sans Thai', sans-serif;
+      background: rgba(255, 237, 213, 0.9);
+      color: var(--peach-deep);
+      border-color: rgba(254, 215, 170, 0.8);
+      max-width: none;
+    }
+
+    .hud-icon-btn {
+      pointer-events: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--faded-black);
+      color: #f5f2ef;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 999px;
+      padding: 6px 13px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      box-shadow: 0 6px 18px rgba(28, 25, 23, 0.18);
+    }
+
+    .hud-icon-btn .ui-icon {
+      color: #e7e2dc;
+    }
+
+    .hud-icon-btn:hover {
+      background: var(--faded-black-hover);
+      border-color: #fed7aa;
+    }
+
+    .hud-icon-btn.active {
+      background: var(--peach-deep);
+      border-color: #fed7aa;
+      color: #fff7ed;
+    }
+
+    /* =========================================================================
+       กรอบข้อความมินิมอลน่ารักๆ ตรงกลางด้านบนสุดของจอกล้อง + ตัวเลือกไอคอน
+       ========================================================================= */
+    .center-note-widget {
+      position: absolute;
+      top: max(12px, env(safe-area-inset-top));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 23;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      max-width: min(44%, 400px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .center-note-widget.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-50%) translateY(-8px) scale(0.96);
+    }
+
+    .note-card {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.96);
+      border-radius: 999px;
+      padding: 5px 14px 5px 6px;
+      box-shadow:
+        0 10px 26px -6px rgba(124, 45, 18, 0.13),
+        0 2px 6px rgba(28, 25, 23, 0.05),
+        inset 0 1px 0 #ffffff;
+      transition: background 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, border-radius 0.18s ease;
+    }
+
+    .note-card:hover,
+    .note-card:focus-within {
+      background: rgba(255, 255, 255, 0.96);
+      border-color: rgba(254, 215, 170, 0.95);
+      box-shadow:
+        0 14px 32px -6px rgba(154, 52, 18, 0.16),
+        0 0 0 3px rgba(255, 237, 213, 0.55);
+    }
+
+    .note-icon-trigger {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+      border: 1px solid rgba(234, 88, 12, 0.16);
+      color: var(--faded-black);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(234, 88, 12, 0.1);
+      transition: transform 0.16s ease, background 0.16s ease;
+    }
+
+    .note-icon-trigger:hover {
+      transform: scale(1.07);
+      background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+      border-color: rgba(234, 88, 12, 0.32);
+    }
+
+    .note-icon-trigger svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .note-text-input {
+      min-width: 110px;
+      max-width: min(34vw, 310px);
+      font-size: 0.8rem;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      color: var(--ink-primary);
+      outline: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+      cursor: text;
+      padding: 2px 4px;
+      border-radius: 8px;
+    }
+
+    .note-text-input:focus {
+      white-space: pre-wrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .note-text-input:empty::before {
+      content: attr(data-placeholder);
+      color: var(--ink-muted);
+      font-weight: 600;
+    }
+
+    .note-done-btn {
+      display: none;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--faded-black);
+      color: #f5f2ef;
+      border: none;
+      font-size: 0.68rem;
+      font-weight: 600;
+      box-shadow: none;
+      flex-shrink: 0;
+    }
+
+    .note-card:focus-within .note-done-btn {
+      display: inline-flex;
+    }
+
+    /* แผงเลือกไอคอนน่ารักๆ แบบมินิมอล */
+    .note-icon-popover {
+      display: none;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid #ffffff;
+      border-radius: 18px;
+      padding: 7px;
+      box-shadow: 0 14px 32px -6px rgba(28, 25, 23, 0.16);
+      animation: drawerPop 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .note-icon-popover.open {
+      display: grid;
+    }
+
+    .icon-choice-btn {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 11px;
+      border: 1px solid transparent;
+      background: var(--surface-soft);
+      color: var(--icon-faded);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: none;
+      transition: all 0.14s ease;
+    }
+
+    .icon-choice-btn svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .icon-choice-btn:hover {
+      background: var(--peach-tint);
+      color: var(--peach-deep);
+      border-color: rgba(234, 88, 12, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .icon-choice-btn.selected {
+      background: var(--faded-black);
+      color: #f5f2ef;
+      border-color: transparent;
+    }
+
+    /* แถบไอคอน Frosted Glass แนวตั้งด้านซ้าย */
+    .atelier-side-rail {
+      position: absolute;
+      left: max(12px, env(safe-area-inset-left));
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 21;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.74);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      padding: 6px;
+      border-radius: 16px;
+      box-shadow: 0 10px 28px rgba(28, 25, 23, 0.08);
+    }
+
+    .rail-icon-btn {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--icon-faded);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: none;
+    }
+
+    .rail-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: rgba(234, 88, 12, 0.25);
+      color: var(--ink-primary);
+      transform: none;
+    }
+
+    .rail-icon-btn.is-active {
+      background: var(--peach-tint);
+      color: var(--peach-deep);
+      border-color: rgba(234, 88, 12, 0.22);
+    }
+
+    .rail-icon-btn .rail-tooltip {
+      position: absolute;
+      left: 42px;
+      top: 50%;
+      transform: translateY(-50%) translateX(-4px);
+      background: var(--faded-black);
+      color: #f5f2ef;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: 999px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      box-shadow: 0 8px 20px rgba(28, 25, 23, 0.22);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rail-tooltip kbd {
+      font-family: 'JetBrains Mono', sans-serif;
+      font-size: 0.65rem;
+      color: #d6d3d1;
+      font-weight: 500;
+    }
+
+    .rail-icon-btn:hover .rail-tooltip {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+
+    /* แถบแจ้งคอร์ดที่กำลังเล่น */
+    .live-chord-pill {
+      position: absolute;
+      bottom: max(14px, env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 18;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(254, 215, 170, 0.9);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--ink-primary);
+      box-shadow: 0 10px 26px rgba(154, 52, 18, 0.14);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.16s ease, transform 0.16s ease;
+      white-space: nowrap;
+    }
+
+    .live-chord-pill.visible {
+      opacity: 1;
+    }
+
+    /* ปุ่มไอค่อนรวมผังคอร์ดนิ้วมุมล่างซ้าย */
+    .finger-map-fab {
+      position: absolute;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      left: max(12px, env(safe-area-inset-left));
+      z-index: 25;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid #ffffff;
+      color: var(--ink-primary);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      box-shadow: 0 8px 22px rgba(28, 25, 23, 0.1);
+    }
+
+    .finger-map-fab .ui-icon {
+      color: var(--icon-faded);
+    }
+
+    .finger-map-fab:hover {
+      background: #ffffff;
+      border-color: #fed7aa;
+    }
+
+    .finger-map-fab .fab-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--faded-black);
+    }
+
+    /* แผ่นผังคอร์ดนิ้วแบบกางออกได้บนหน้าจอกล้อง */
+    .finger-hud-drawer {
+      position: absolute;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      left: max(12px, env(safe-area-inset-left));
+      right: max(12px, env(safe-area-inset-right));
+      z-index: 24;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid #ffffff;
+      border-radius: 18px;
+      padding: 10px 12px;
+      display: none;
+      flex-direction: column;
+      gap: 7px;
+      box-shadow: 0 16px 36px rgba(28, 25, 23, 0.12);
+      animation: drawerPop 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .finger-hud-drawer.open {
+      display: flex;
+    }
+
+    @keyframes drawerPop {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .drawer-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .drawer-title-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .drawer-close-btn {
+      background: var(--faded-black);
+      border: none;
+      color: #f5f2ef;
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .drawer-close-btn:hover {
+      background: var(--faded-black-hover);
+      color: #ffffff;
+    }
+
+    .drawer-hands-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .drawer-hand-col {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .drawer-hand-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .drawer-hand-label span:first-child {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .drawer-hand-col.left .drawer-hand-label { color: var(--peach-deep); }
+    .drawer-hand-col.right .drawer-hand-label { color: var(--sand-deep); }
+
+    .drawer-pills {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+    }
+
+    .mini-pill {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--hairline-strong);
+      border-radius: 10px;
+      padding: 5px 2px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.1s ease, background 0.14s ease, border-color 0.14s ease;
+      user-select: none;
+    }
+
+    .mini-pill:hover {
+      border-color: rgba(234, 88, 12, 0.45);
+    }
+
+    .mini-pill .mp-chord {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--ink-primary);
+      line-height: 1.15;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mini-pill.empty .mp-chord {
+      color: var(--ink-muted);
+      font-weight: 500;
+    }
+
+    .mini-pill .mp-finger {
+      font-size: 0.58rem;
+      color: var(--ink-secondary);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .drawer-hand-col.left .mini-pill.active {
+      background: linear-gradient(135deg, #ffedd5, #fed7aa);
+      border-color: #fb923c;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(234, 88, 12, 0.18);
+    }
+
+    .drawer-hand-col.right .mini-pill.active {
+      background: linear-gradient(135deg, #f5f2ef, #e7e2dc);
+      border-color: #78716c;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(28, 25, 23, 0.14);
+    }
+
+    /* =========================================================================
+       กรอบตั้งค่านิ้ว 10 ช่องด้านล่างกล้อง
+       ========================================================================= */
+    .hands-board {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .hand-box {
+      background: var(--surface-white);
+      border: 1px solid var(--hairline);
+      border-radius: 22px;
+      padding: 13px 14px;
+      box-shadow: 0 6px 22px -8px rgba(28, 25, 23, 0.05);
+    }
+
+    .hand-box.left {
+      background: linear-gradient(180deg, #fffaf5 0%, #ffffff 100%);
+      border-color: rgba(234, 88, 12, 0.15);
+    }
+
+    .hand-box.right {
+      background: linear-gradient(180deg, #faf8f6 0%, #ffffff 100%);
+      border-color: rgba(28, 25, 23, 0.1);
+    }
+
+    .hand-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 9px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .hand-box-header span:first-child {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hand-box.left .hand-box-header { color: var(--peach-deep); }
+    .hand-box.right .hand-box-header { color: var(--sand-deep); }
+
+    .hand-box-header span:last-child {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+    }
+
+    .finger-slots {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .slot {
+      position: relative;
+      background: var(--surface-white);
+      border: 1.5px dashed rgba(143, 134, 127, 0.42);
+      border-radius: 14px;
+      padding: 9px 4px 8px;
+      text-align: center;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1), background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      user-select: none;
+      min-width: 0;
+    }
+
+    .slot.filled {
+      border-style: solid;
+      border-color: var(--hairline);
+      box-shadow: 0 2px 8px rgba(28, 25, 23, 0.03);
+    }
+
+    .slot.drag-over {
+      border-style: dashed;
+      border-color: var(--peach-accent) !important;
+      background: var(--peach-tint) !important;
+      transform: scale(1.04);
+    }
+
+    .slot.selected-slot {
+      outline: 2px solid var(--faded-black);
+      outline-offset: 1px;
+    }
+
+    .slot .chord-name {
+      font-size: 0.96rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--ink-primary);
+      word-break: break-word;
+      max-width: 100%;
+    }
+
+    .slot.empty .chord-name {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+    }
+
+    .slot .chord-notes {
+      font-family: 'JetBrains Mono', sans-serif;
+      font-size: 0.58rem;
+      color: var(--ink-muted);
+      margin-top: 2px;
+      line-height: 1.15;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .slot .finger-tag {
+      font-size: 0.63rem;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      margin-top: 5px;
+      background: var(--surface-soft);
+      padding: 2px 6px;
+      border-radius: 999px;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .slot.combo-slot .finger-tag {
+      background: var(--peach-tint);
+      color: var(--peach-deep);
+    }
+
+    .meter-track {
+      width: 74%;
+      height: 4px;
+      background: #f3ede8;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 0%;
+      background: #d6cfc9;
+      transition: width 0.06s linear, background 0.1s ease;
+    }
+
+    .hand-box.left .slot.active .meter-fill {
+      background: #fb923c;
+    }
+
+    .hand-box.right .slot.active .meter-fill {
+      background: #57534e;
+    }
+
+    .slot .clear-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #f5f2ef;
+      color: var(--icon-faded);
+      border: none;
+      padding: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: none;
+    }
+
+    .slot.filled:hover .clear-btn {
+      display: inline-flex;
+    }
+
+    .slot .clear-btn:hover {
+      background: #ffedd5;
+      color: var(--peach-deep);
+      transform: none;
+    }
+
+    /* สถานะขณะชูนิ้วเล่น */
+    .hand-box.left .slot.active {
+      background: linear-gradient(155deg, #ffedd5 0%, #fed7aa 100%);
+      border-color: #fb923c;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 22px -6px rgba(234, 88, 12, 0.22);
+    }
+
+    .hand-box.left .slot.active .chord-name {
+      color: #7c2d12;
+    }
+
+    .hand-box.right .slot.active {
+      background: linear-gradient(155deg, #f5f2ef 0%, #e7e2dc 100%);
+      border-color: #78716c;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 22px -6px rgba(28, 25, 23, 0.16);
+    }
+
+    .hand-box.right .slot.active .chord-name {
+      color: #1c1917;
+    }
+
+    /* =========================================================================
+       โซนคลังคอร์ด
+       ========================================================================= */
+    .studio-panel {
+      width: 100%;
+      background: var(--surface-white);
+      border: 1px solid var(--hairline);
+      border-radius: 22px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 6px 24px -8px rgba(28, 25, 23, 0.04);
+    }
+
+    .studio-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--hairline);
+      padding-bottom: 11px;
+    }
+
+    .studio-title {
+      font-size: 0.94rem;
+      font-weight: 800;
+      letter-spacing: -0.015em;
+      color: var(--ink-primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .studio-hint {
+      font-size: 0.75rem;
+      color: var(--ink-secondary);
+      margin-top: 2px;
+    }
+
+    .studio-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .studio-actions button {
+      padding: 6px 12px;
+      font-size: 0.74rem;
+      background: var(--surface-soft);
+      border-color: var(--hairline);
+    }
+
+    .studio-actions button:hover {
+      background: var(--peach-tint);
+      color: var(--peach-deep);
+      border-color: rgba(234, 88, 12, 0.25);
+    }
+
+    .filter-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface-soft);
+      padding: 9px 12px;
+      border-radius: 16px;
+      border: 1px solid var(--hairline);
+    }
+
+    .root-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .root-btn {
+      padding: 4px 9px;
+      font-size: 0.73rem;
+      font-weight: 700;
+      border-radius: 999px;
+      background: var(--surface-white);
+      border: 1px solid var(--hairline);
+      color: var(--ink-secondary);
+      box-shadow: none;
+    }
+
+    .root-btn:hover {
+      color: var(--ink-primary);
+      border-color: var(--hairline-strong);
+      transform: none;
+    }
+
+    .root-btn.active {
+      background: var(--faded-black);
+      border-color: transparent;
+      color: #f5f2ef;
+    }
+
+    .search-input-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .search-input-wrap .ui-icon {
+      position: absolute;
+      left: 11px;
+      color: var(--icon-faded);
+      pointer-events: none;
+    }
+
+    .chord-search {
+      padding: 6px 13px 6px 32px !important;
+      font-size: 0.78rem !important;
+      background: var(--surface-white) !important;
+      min-width: 220px;
+    }
+
+    .zones-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .chord-zone {
+      border-radius: 18px;
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--hairline);
+    }
+
+    .zone-basic {
+      background: linear-gradient(180deg, #fff8f1 0%, #ffffff 100%);
+      border-color: rgba(234, 88, 12, 0.14);
+    }
+
+    .zone-add {
+      background: linear-gradient(180deg, #faf7f4 0%, #ffffff 100%);
+      border-color: rgba(120, 113, 108, 0.14);
+    }
+
+    .zone-seventh {
+      background: linear-gradient(180deg, #fff5f2 0%, #ffffff 100%);
+      border-color: rgba(225, 29, 72, 0.11);
+    }
+
+    .zone-extended {
+      background: linear-gradient(180deg, #f7f5f3 0%, #ffffff 100%);
+      border-color: rgba(28, 25, 23, 0.1);
+    }
+
+    .zone-header {
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .zone-basic .zone-header { color: var(--peach-deep); }
+    .zone-add .zone-header { color: var(--sand-deep); }
+    .zone-seventh .zone-header { color: #9f1239; }
+    .zone-extended .zone-header { color: #292524; }
+
+    .zone-header span:last-child {
+      font-family: 'JetBrains Mono', 'Noto Sans Thai', sans-serif;
+      font-size: 0.68rem;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--hairline);
+    }
+
+    .chord-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 156px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .chord-chips::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .chord-chips::-webkit-scrollbar-thumb {
+      background: #d6cfc9;
+      border-radius: 99px;
+    }
+
+    .chip {
+      padding: 5px 10px;
+      border-radius: 10px;
+      background: var(--surface-white);
+      border: 1px solid var(--hairline);
+      color: var(--ink-primary);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 1px 3px rgba(28, 25, 23, 0.03);
+      transition: transform 0.12s ease, background 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px -4px rgba(28, 25, 23, 0.08);
+    }
+
+    .chip:active {
+      cursor: grabbing;
+      transform: scale(0.96);
+    }
+
+    .zone-basic .chip:hover { border-color: #fdba74; background: #fff7ed; }
+    .zone-add .chip:hover { border-color: #d6d3d1; background: #fafaf9; }
+    .zone-seventh .chip:hover { border-color: #fda4af; background: #fff1f2; }
+    .zone-extended .chip:hover { border-color: #a8a29e; background: #f5f5f4; }
+
+    /* =========================================================================
+       การปรับขนาดสำหรับแท็บเล็ตและมือถือ (Responsive)
+       ========================================================================= */
+    @media (max-width: 820px) {
+      .hands-board,
+      .zones-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .drawer-hands-grid {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .center-note-widget {
+        top: 46px;
+        max-width: min(86%, 360px);
+      }
+
+      .note-text-input {
+        max-width: min(58vw, 280px);
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px 8px 36px;
+      }
+
+      .atelier-frame {
+        padding: 14px 12px 20px;
+        border-radius: 22px;
+        gap: 10px;
+      }
+
+      button, select {
+        padding: 6px 10px;
+        font-size: 0.74rem;
+      }
+
+      .controls {
+        padding: 7px 9px;
+      }
+
+      .fx-rack {
+        padding: 8px 10px;
+        gap: 8px;
+      }
+
+      .fx-item {
+        font-size: 0.72rem;
+        gap: 4px;
+      }
+
+      .fx-item select {
+        padding: 4px 7px;
+        font-size: 0.7rem;
+      }
+
+      .fx-item input[type="range"] {
+        width: 48px;
+      }
+
+      .fx-val {
+        min-width: 32px;
+        font-size: 0.68rem;
+      }
+
+      .stage {
+        aspect-ratio: 4 / 3;
+        max-height: 46dvh;
+        border-radius: 18px;
+      }
+
+      .atelier-side-rail {
+        display: none;
+      }
+
+      .center-note-widget {
+        top: 40px;
+        max-width: 88%;
+      }
+
+      .note-card {
+        padding: 4px 11px 4px 5px;
+        gap: 6px;
+      }
+
+      .note-icon-trigger {
+        width: 24px;
+        height: 24px;
+      }
+
+      .note-icon-trigger svg {
+        width: 12px;
+        height: 12px;
+      }
+
+      .note-text-input {
+        font-size: 0.74rem;
+        min-width: 96px;
+        max-width: 60vw;
+      }
+
+      .badge {
+        padding: 4px 10px;
+        font-size: 0.68rem;
+        max-width: 56vw;
+      }
+
+      .badge.filter-badge {
+        display: none;
+      }
+
+      .hud-icon-btn {
+        padding: 5px 10px;
+        font-size: 0.68rem;
+      }
+
+      .finger-map-fab {
+        padding: 5px 11px;
+        font-size: 0.7rem;
+      }
+
+      .live-chord-pill {
+        bottom: 40px;
+        padding: 4px 11px;
+        font-size: 0.7rem;
+      }
+
+      .finger-hud-drawer {
+        padding: 8px;
+        gap: 5px;
+        border-radius: 14px;
+      }
+
+      .mini-pill {
+        padding: 3px 1px;
+        border-radius: 7px;
+      }
+
+      .mini-pill .mp-chord {
+        font-size: 0.68rem;
+      }
+
+      .mini-pill .mp-finger {
+        font-size: 0.52rem;
+      }
+
+      .hand-box {
+        padding: 10px 8px;
+        border-radius: 18px;
+      }
+
+      .finger-slots {
+        gap: 4px;
+      }
+
+      .slot {
+        min-height: 76px;
+        padding: 6px 2px 5px;
+        border-radius: 11px;
+      }
+
+      .slot .chord-name {
+        font-size: 0.8rem;
+      }
+
+      .slot.empty .chord-name {
+        font-size: 0.65rem;
+      }
+
+      .slot .chord-notes {
+        font-size: 0.52rem;
+      }
+
+      .slot .finger-tag {
+        font-size: 0.54rem;
+        padding: 1px 4px;
+      }
+
+      .slot.filled .clear-btn {
+        display: inline-flex;
+        width: 14px;
+        height: 14px;
+      }
+
+      .search-input-wrap,
+      .chord-search {
+        width: 100%;
+        min-width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="atelier-frame">
+    <!-- แถบ Editorial Header -->
+    <header class="editorial-topbar">
+      <div class="brand-block">
+        <div class="brand-emblem" aria-hidden="true">
+          <svg class="ui-icon ui-icon-lg" viewBox="0 0 24 24">
+            <path d="M9 18V5l12-2v13" />
+            <circle cx="6" cy="18" r="3" />
+            <circle cx="18" cy="16" r="3" />
+          </svg>
+        </div>
+        <div class="brand-titles">
+          <h1>Chollar</h1>
+          <p class="subtitle">เป็นเว็ป DEMO ที่ทำขึ้นโดยนาย ชลธี จงคอยกลาง (จา)</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <select id="cameraSelect" style="display: none;" title="เลือกกล้อง"></select>
+        <button id="toggleStudioBtn" class="toggle-studio active">
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="14" width="7" height="7" rx="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" />
+          </svg>
+          <span>ซ่อนคลังคอร์ด</span>
+        </button>
+        <button id="startBtn" class="primary">
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <path d="M23 7l-7 5 7 5V7z" />
+            <rect x="1" y="5" width="15" height="14" rx="2.5" />
+          </svg>
+          <span>เปิดกล้อง & เริ่มเล่น</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- แถบเลือกจังหวะและเสียงเครื่องดนตรี (จัดหมวดหมู่ + ช่องแนะนำ) -->
+    <div class="controls">
+      <div class="controls-group">
+        <select id="playStyleSelect">
+          <option value="sustain">จังหวะ: ชูค้างเสียงดังต่อเนื่อง (Sustain)</option>
+          <option value="trigger">จังหวะ: ดีดตามจังหวะชูนิ้ว (Trigger)</option>
+        </select>
+
+        <select id="presetSelect" title="เลือกเสียงเครื่องดนตรี">
+          <optgroup label="แนะนำ (Top Recommended)">
+            <option value="grand_piano" selected>เสียง: Grand Piano — แกรนด์เปียโนกังวานนุ่ม</option>
+            <option value="warm_synth">เสียง: Warm Synth — ซินธ์อุ่นละมุนโอบล้อม</option>
+            <option value="retro_synth">เสียง: Retro Synth — ซินธ์อนาล็อกยุค 80s</option>
+            <option value="dreamy_string">เสียง: Dreamy String — เครื่องสายล่องลอยชวนฝัน</option>
+            <option value="horn">เสียง: Warm Horn — เครื่องเป่าฮอร์นอบอุ่นทรงพลัง</option>
+            <option value="epiano">เสียง: Lo-Fi Rhodes — เปียโนไฟฟ้าชิลล์ละมุน</option>
+          </optgroup>
+
+          <optgroup label="เปียโน & คีย์บอร์ด (Piano & Keys)">
+            <option value="upright_piano">เสียง: Upright Piano — เปียโนอัพไรท์อินดี้</option>
+            <option value="felt_piano">เสียง: Intimate Felt Piano — เปียโนซับเสียงนุ่มลึก</option>
+            <option value="dx_piano">เสียง: 80s FM Crystal Piano — เปียโนคริสตัลใส</option>
+            <option value="wurlitzer">เสียง: Vintage Wurlitzer — เปียโนไฟฟ้าวินเทจ</option>
+            <option value="clavinet">เสียง: Funky Clavinet — คลาวิเน็ตดีดเด้ง</option>
+            <option value="harpsichord">เสียง: Baroque Harpsichord — ฮาร์ปซิคอร์ดคลาสสิก</option>
+          </optgroup>
+
+          <optgroup label="ซินธิไซเซอร์ & แพด (Synthesizers & Pads)">
+            <option value="analog_poly">เสียง: Analog Polysynth — โพลีซินธ์หนาแน่น</option>
+            <option value="glass_pad">เสียง: Glass Ambient Pad — แพดแก้วใสโปร่ง</option>
+            <option value="dream_pluck">เสียง: Dreamy Synth Pluck — ซินธ์พลัคเด้งนุ่ม</option>
+            <option value="cyber_lead">เสียง: Silky Synth Lead — ซินธ์ลีดพริ้วหวาน</option>
+            <option value="sub_pad">เสียง: Deep Sub Pad — แพดทุ้มลึกอบอุ่น</option>
+            <option value="aurora_pad">เสียง: Aurora Shimmer Pad — แพดระยิบระยับ</option>
+            <option value="pad">เสียง: Warm Ambient Pad — ซินธ์แพดนุ่มนวล</option>
+          </optgroup>
+
+          <optgroup label="เครื่องสาย & เสียงประสาน (Strings & Choir)">
+            <option value="strings">เสียง: Warm String Ensemble — วงเครื่องสายอบอุ่น</option>
+            <option value="cello_ensemble">เสียง: Deep Cello Section — วงเชลโลทุ้มนุ่มลึก</option>
+            <option value="pizzicato">เสียง: Pizzicato Strings — เครื่องสายดีดนิ้วกระชับ</option>
+            <option value="harp">เสียง: Concert Harp — พิณคอนเสิร์ตกังวาน</option>
+            <option value="choir_pad">เสียง: Ethereal Vocal Choir — เสียงประสานล่องลอย</option>
+          </optgroup>
+
+          <optgroup label="เครื่องเป่าทองเหลือง & ลมไม้ (Brass & Woodwinds)">
+            <option value="brass_section">เสียง: Symphonic Brass — วงเครื่องเป่าออร์เคสตรา</option>
+            <option value="muted_trumpet">เสียง: Jazz Muted Trumpet — ทรัมเป็ตแจ๊สซอฟต์</option>
+            <option value="flute">เสียง: Soft Bamboo Flute — ขลุ่ยไม้นุ่มละมุน</option>
+            <option value="pan_flute">เสียง: Airy Pan Flute — แพนฟลูตโปร่งสบาย</option>
+          </optgroup>
+
+          <optgroup label="กีตาร์ ออร์แกน & เครื่องเคาะ (Guitar, Organ & Mallets)">
+            <option value="nylon_guitar">เสียง: Acoustic Nylon Guitar — กีตาร์โปร่งสายไนลอน</option>
+            <option value="kalimba">เสียง: Kalimba — คาลิมบาใสกังวาน</option>
+            <option value="celesta">เสียง: Celesta / Music Box — กล่องดนตรีระยิบระยับ</option>
+            <option value="vibraphone">เสียง: Jazz Vibraphone — ไวบราโฟนแจ๊สสั่นพริ้ว</option>
+            <option value="marimba">เสียง: Warm Wooden Marimba — มาริมบาไม้อบอุ่น</option>
+            <option value="jazz_organ">เสียง: Jazz Drawbar Organ — ออร์แกนแจ๊สคลาสสิก</option>
+            <option value="church_organ">เสียง: Cathedral Pipe Organ — ออร์แกนท่อกังวาน</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <label class="fx-item" style="cursor: pointer;" title="เลือกเฉพาะท่าที่ตั้งใจเล่นที่สุด 1 ท่าต่อมือ ป้องกันคอร์ดซ้อน">
+        <input type="checkbox" id="soloFingerToggle" checked />
+        <svg class="ui-icon" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+        <span>ทีละ 1 ท่า/มือ</span>
+      </label>
+    </div>
+
+    <!-- แผงควบคุมความนิ่ง ยกมือ=เสียงสูงในคีย์ Sustain และเอฟเฟกต์ -->
+    <div class="fx-rack">
+      <div class="fx-item">
+        <svg class="ui-icon" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <line x1="12" y1="3" x2="12" y2="7" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+          <line x1="3" y1="12" x2="7" y2="12" />
+          <line x1="17" y1="12" x2="21" y2="12" />
+        </svg>
+        <span>ความนิ่ง:</span>
+        <select id="stabilitySelect">
+          <option value="strict">นิ่งพิเศษ</option>
+          <option value="balanced" selected>สมดุล</option>
+          <option value="fast">ไวพิเศษ</option>
+        </select>
+      </div>
+
+      <div class="fx-item" title="ชูนิ้วเล่นคอร์ดแล้วยกมือขึ้น เสียงคอร์ดจะไต่ระดับสูงขึ้นโดยล็อกให้อยู่ในคอร์ดและคีย์เดิม 100%">
+        <svg class="ui-icon" viewBox="0 0 24 24">
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+          <polyline points="16 7 22 7 22 13" />
+        </svg>
+        <span>ยกมือ=สูงในคีย์:</span>
+        <select id="pitchLiftSelect">
+          <option value="inversion12" selected>ไล่ในคอร์ด (+1 Oct)</option>
+          <option value="inversion24">ไล่ในคอร์ด (+2 Oct)</option>
+          <option value="octave">ทีละ Octave (+1/+2 Oct)</option>
+          <option value="off">ปิด</option>
+        </select>
+      </div>
+
+      <div class="fx-item" title="0% = ไม่มี Sustain เลย | 50% = ค้างปานกลาง 50% | 100% = ติดค้างยาวนานต่อเนื่อง">
+        <svg class="ui-icon" viewBox="0 0 24 24">
+          <path d="M2 12h4l3-7 4 14 3-7h6" />
+        </svg>
+        <span>Sustain:</span>
+        <input type="range" id="sustainSlider" min="0" max="100" value="50" />
+        <span class="fx-val" id="sustainVal">50%</span>
+      </div>
+
+      <div class="fx-item">
+        <svg class="ui-icon" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="2" />
+          <circle cx="12" cy="12" r="6" />
+          <circle cx="12" cy="12" r="10" />
+        </svg>
+        <span>Reverb:</span>
+        <input type="range" id="reverbSlider" min="0" max="100" value="45" />
+        <span class="fx-val" id="reverbVal">45%</span>
+      </div>
+
+      <div class="fx-item">
+        <svg class="ui-icon" viewBox="0 0 24 24">
+          <polyline points="17 1 21 5 17 9" />
+          <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+          <polyline points="7 23 3 19 7 15" />
+          <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+        </svg>
+        <span>Delay:</span>
+        <input type="range" id="delaySlider" min="0" max="100" value="25" />
+        <span class="fx-val" id="delayVal">25%</span>
+      </div>
+
+      <label class="fx-item" style="cursor: pointer;">
+        <input type="checkbox" id="filterToggle" checked />
+        <svg class="ui-icon" viewBox="0 0 24 24">
+          <line x1="4" y1="21" x2="4" y2="14" />
+          <line x1="4" y1="10" x2="4" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12" y2="3" />
+          <line x1="20" y1="21" x2="20" y2="16" />
+          <line x1="20" y1="12" x2="20" y2="3" />
+          <line x1="1" y1="14" x2="7" y2="14" />
+          <line x1="9" y1="8" x2="15" y2="8" />
+          <line x1="17" y1="16" x2="23" y2="16" />
+        </svg>
+        <span>Filter</span>
+      </label>
+    </div>
+
+    <!-- กรอบกล้อง พร้อมกรอบข้อความมินิมอลด้านบนสุด และเส้นคลื่นเสียงบางพริ้ว -->
+    <div class="stage" id="cameraStage">
+      <div class="hud-top">
+        <div id="status" class="badge">สถานะ: กด "เปิดกล้อง & เริ่มเล่น"</div>
+        <div class="hud-top-right">
+          <div id="filterHud" class="badge filter-badge">Filter: 2,600 Hz</div>
+          <button id="fullscreenBtn" class="hud-icon-btn" title="ขยายกล้องเต็มหน้าจอ">
+            <svg class="ui-icon" viewBox="0 0 24 24">
+              <polyline points="15 3 21 3 21 9" />
+              <polyline points="9 21 3 21 3 15" />
+              <line x1="21" y1="3" x2="14" y2="10" />
+              <line x1="3" y1="21" x2="10" y2="14" />
+            </svg>
+            <span>เต็มจอ</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- กรอบข้อความมินิมอลน่ารักๆ ตรงกลางด้านบนสุดของจอกล้อง + ตัวเลือกไอคอน -->
+      <div class="center-note-widget" id="centerNoteWidget">
+        <div class="note-card" id="noteCard">
+          <button type="button" class="note-icon-trigger" id="noteIconTrigger" title="เลือกไอคอนน่ารักๆ"></button>
+          <div
+            class="note-text-input"
+            id="noteTextInput"
+            contenteditable="true"
+            spellcheck="false"
+            data-placeholder="พิมพ์ข้อความน่ารักๆ ตรงนี้..."
+          ></div>
+          <button type="button" class="note-done-btn" id="noteDoneBtn">เสร็จ</button>
+        </div>
+        <div class="note-icon-popover" id="noteIconPopover"></div>
+      </div>
+
+      <!-- แถบไอคอน Frosted Glass แนวตั้ง -->
+      <div class="atelier-side-rail" aria-hidden="true">
+        <button type="button" class="rail-icon-btn is-active" id="railCaptionBtn" title="แสดง/ซ่อนกรอบข้อความด้านบนจอ">
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+          </svg>
+          <span class="rail-tooltip">Caption <kbd>C</kbd></span>
+        </button>
+        <button type="button" class="rail-icon-btn" onclick="document.getElementById('fingerMapFab').click()">
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <path d="M18 11V6a2 2 0 0 0-4 0v4" />
+            <path d="M14 10V4a2 2 0 0 0-4 0v6" />
+            <path d="M10 10.5V6a2 2 0 0 0-4 0v8" />
+            <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+          </svg>
+          <span class="rail-tooltip">Chord Map <kbd>M</kbd></span>
+        </button>
+        <button type="button" class="rail-icon-btn" onclick="document.getElementById('filterToggle').click()">
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <line x1="4" y1="21" x2="4" y2="14" />
+            <line x1="4" y1="10" x2="4" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12" y2="3" />
+            <line x1="20" y1="21" x2="20" y2="16" />
+            <line x1="20" y1="12" x2="20" y2="3" />
+            <line x1="1" y1="14" x2="7" y2="14" />
+            <line x1="9" y1="8" x2="15" y2="8" />
+            <line x1="17" y1="16" x2="23" y2="16" />
+          </svg>
+          <span class="rail-tooltip">Air Filter <kbd>F</kbd></span>
+        </button>
+        <button type="button" class="rail-icon-btn" onclick="document.getElementById('toggleStudioBtn').click()">
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="14" width="7" height="7" rx="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" />
+          </svg>
+          <span class="rail-tooltip">Library <kbd>L</kbd></span>
+        </button>
+        <button type="button" class="rail-icon-btn" onclick="document.getElementById('fullscreenBtn').click()">
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <polyline points="15 3 21 3 21 9" />
+            <polyline points="9 21 3 21 3 15" />
+            <line x1="21" y1="3" x2="14" y2="10" />
+            <line x1="3" y1="21" x2="10" y2="14" />
+          </svg>
+          <span class="rail-tooltip">Fullscreen <kbd>FS</kbd></span>
+        </button>
+      </div>
+
+      <!-- แถบแจ้งคอร์ดที่กำลังเล่น -->
+      <div id="liveChordPill" class="live-chord-pill"></div>
+
+      <!-- ปุ่มไอค่อนรวมผังคอร์ดนิ้ว -->
+      <button id="fingerMapFab" class="finger-map-fab" title="กดเพื่อดู/ซ่อนผังคอร์ดตามนิ้วที่ตั้งไว้">
+        <span class="fab-dot"></span>
+        <svg class="ui-icon" viewBox="0 0 24 24">
+          <path d="M18 11V6a2 2 0 0 0-4 0v4" />
+          <path d="M14 10V4a2 2 0 0 0-4 0v6" />
+          <path d="M10 10.5V6a2 2 0 0 0-4 0v8" />
+          <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+        </svg>
+        <span>ผังคอร์ด</span>
+      </button>
+
+      <!-- แผ่นผังคอร์ดนิ้วบนหน้าจอกล้อง -->
+      <div id="fingerHudDrawer" class="finger-hud-drawer">
+        <div class="drawer-top-bar">
+          <span class="drawer-title-group">
+            <svg class="ui-icon" viewBox="0 0 24 24">
+              <path d="M18 11V6a2 2 0 0 0-4 0v4" />
+              <path d="M14 10V4a2 2 0 0 0-4 0v6" />
+              <path d="M10 10.5V6a2 2 0 0 0-4 0v8" />
+              <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+            </svg>
+            <span>ผังคอร์ดตามท่ามือ (แตะที่คอร์ดเพื่อลองฟังเสียง)</span>
+          </span>
+          <button id="drawerCloseBtn" class="drawer-close-btn">
+            <span>พับเก็บ</span>
+            <svg class="ui-icon ui-icon-sm" style="color: #e7e2dc;" viewBox="0 0 24 24">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="drawer-hands-grid">
+          <div class="drawer-hand-col left">
+            <div class="drawer-hand-label">
+              <span>
+                <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24">
+                  <path d="M18 11V6a2 2 0 0 0-4 0v4" />
+                  <path d="M14 10V4a2 2 0 0 0-4 0v6" />
+                  <path d="M10 10.5V6a2 2 0 0 0-4 0v8" />
+                  <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+                </svg>
+                มือซ้าย
+              </span>
+              <span>ก้อย — โป้ง</span>
+            </div>
+            <div class="drawer-pills" id="hudLeftPills"></div>
+          </div>
+          <div class="drawer-hand-col right">
+            <div class="drawer-hand-label">
+              <span>
+                <svg class="ui-icon ui-icon-sm" style="transform: scaleX(-1);" viewBox="0 0 24 24">
+                  <path d="M18 11V6a2 2 0 0 0-4 0v4" />
+                  <path d="M14 10V4a2 2 0 0 0-4 0v6" />
+                  <path d="M10 10.5V6a2 2 0 0 0-4 0v8" />
+                  <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+                </svg>
+                มือขวา
+              </span>
+              <span>โป้ง — ก้อย</span>
+            </div>
+            <div class="drawer-pills" id="hudRightPills"></div>
+          </div>
+        </div>
+      </div>
+
+      <video id="webcam" autoplay playsinline muted></video>
+      <canvas id="overlay"></canvas>
+    </div>
+
+    <!-- กรอบตั้งค่านิ้ว 10 ช่อง -->
+    <div class="hands-board">
+      <div class="hand-box left">
+        <div class="hand-box-header">
+          <span>
+            <svg class="ui-icon" viewBox="0 0 24 24">
+              <path d="M18 11V6a2 2 0 0 0-4 0v4" />
+              <path d="M14 10V4a2 2 0 0 0-4 0v6" />
+              <path d="M10 10.5V6a2 2 0 0 0-4 0v8" />
+              <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+            </svg>
+            มือซ้าย (5 ท่า)
+          </span>
+          <span>ฝั่งซ้ายของหน้าจอ</span>
+        </div>
+        <div class="finger-slots" id="leftSlots"></div>
+      </div>
+
+      <div class="hand-box right">
+        <div class="hand-box-header">
+          <span>
+            <svg class="ui-icon" style="transform: scaleX(-1);" viewBox="0 0 24 24">
+              <path d="M18 11V6a2 2 0 0 0-4 0v4" />
+              <path d="M14 10V4a2 2 0 0 0-4 0v6" />
+              <path d="M10 10.5V6a2 2 0 0 0-4 0v8" />
+              <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+            </svg>
+            มือขวา (5 ท่า)
+          </span>
+          <span>ฝั่งขวาของหน้าจอ</span>
+        </div>
+        <div class="finger-slots" id="rightSlots"></div>
+      </div>
+    </div>
+
+    <!-- แผงโหมดคัสตอม: คลังคอร์ดครบทุกคีย์และทุกชนิด (646 คอร์ด) -->
+    <div class="studio-panel" id="studioPanel">
+      <div class="studio-header">
+        <div>
+          <div class="studio-title">
+            <svg class="ui-icon" viewBox="0 0 24 24">
+              <path d="M9 18V5l12-2v13" />
+              <circle cx="6" cy="18" r="3" />
+              <circle cx="18" cy="16" r="3" />
+            </svg>
+            <span>คลังคอร์ด Custom ครบทุกคอร์ดจริง (646 คอร์ด)</span>
+          </div>
+          <div class="studio-hint">ลากคอร์ดไปวางในช่องนิ้วด้านบน • หรือแตะเลือกช่องนิ้วก่อนแล้วจิ้มคอร์ดที่ต้องการ</div>
+        </div>
+        <div class="studio-actions">
+          <button id="presetBasicBtn">ชุดพื้นฐาน</button>
+          <button id="presetAdd9Btn">ชุด Pop add9</button>
+          <button id="presetJazz7Btn">ชุด Jazz 7th / 9th</button>
+          <button id="clearAllBtn">ล้างทุกช่อง</button>
+        </div>
+      </div>
+
+      <div class="filter-toolbar">
+        <div class="root-tabs" id="rootTabs"></div>
+        <div class="search-input-wrap">
+          <svg class="ui-icon ui-icon-sm" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input type="text" id="chordSearch" class="chord-search" placeholder="ค้นหา เช่น Cadd9, F#m7, Bm7b5..." />
+        </div>
+      </div>
+
+      <div class="zones-grid">
+        <div class="chord-zone zone-basic">
+          <div class="zone-header">
+            <span>1. คอร์ดพื้นฐาน (Major, Minor, 5, dim, aug, sus, 6)</span>
+            <span id="countBasic">0</span>
+          </div>
+          <div class="chord-chips" id="zoneBasic"></div>
+        </div>
+
+        <div class="chord-zone zone-add">
+          <div class="zone-header">
+            <span>2. คอร์ด add9 / m(add9) / add11 / 6/9</span>
+            <span id="countAdd">0</span>
+          </div>
+          <div class="chord-chips" id="zoneAdd"></div>
+        </div>
+
+        <div class="chord-zone zone-seventh">
+          <div class="zone-header">
+            <span>3. คอร์ด 7 ทุกชนิด (7, maj7, m7, m7b5, dim7, 7sus, mM7)</span>
+            <span id="countSeventh">0</span>
+          </div>
+          <div class="chord-chips" id="zoneSeventh"></div>
+        </div>
+
+        <div class="chord-zone zone-extended">
+          <div class="zone-header">
+            <span>4. คอร์ด Extended (9, maj9, m9, 11, 13, 7b9, 7#9, 7alt)</span>
+            <span id="countExtended">0</span>
+          </div>
+          <div class="chord-chips" id="zoneExtended"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import {
+      FilesetResolver,
+      HandLandmarker
+    } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs";
+
+    const cameraStage = document.getElementById("cameraStage");
+    const video = document.getElementById("webcam");
+    const canvas = document.getElementById("overlay");
+    const ctx = canvas.getContext("2d");
+    const startBtn = document.getElementById("startBtn");
+    const cameraSelect = document.getElementById("cameraSelect");
+    const statusEl = document.getElementById("status");
+    const filterHud = document.getElementById("filterHud");
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+
+    const fingerMapFab = document.getElementById("fingerMapFab");
+    const fingerHudDrawer = document.getElementById("fingerHudDrawer");
+    const drawerCloseBtn = document.getElementById("drawerCloseBtn");
+    const liveChordPill = document.getElementById("liveChordPill");
+
+    const centerNoteWidget = document.getElementById("centerNoteWidget");
+    const noteIconTrigger = document.getElementById("noteIconTrigger");
+    const noteTextInput = document.getElementById("noteTextInput");
+    const noteDoneBtn = document.getElementById("noteDoneBtn");
+    const noteIconPopover = document.getElementById("noteIconPopover");
+    const railCaptionBtn = document.getElementById("railCaptionBtn");
+
+    const toggleStudioBtn = document.getElementById("toggleStudioBtn");
+    const studioPanel = document.getElementById("studioPanel");
+    const soloFingerToggle = document.getElementById("soloFingerToggle");
+    const stabilitySelect = document.getElementById("stabilitySelect");
+    const pitchLiftSelect = document.getElementById("pitchLiftSelect");
+    const playStyleSelect = document.getElementById("playStyleSelect");
+    const presetSelect = document.getElementById("presetSelect");
+    const sustainSlider = document.getElementById("sustainSlider");
+    const reverbSlider = document.getElementById("reverbSlider");
+    const delaySlider = document.getElementById("delaySlider");
+    const filterToggle = document.getElementById("filterToggle");
+    const chordSearchInput = document.getElementById("chordSearch");
+
+    const ICON_GRID_SVG = `<svg class="ui-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /></svg>`;
+    const ICON_MAX_SVG = `<svg class="ui-icon" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" /><line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" /></svg>`;
+    const ICON_MIN_SVG = `<svg class="ui-icon" viewBox="0 0 24 24"><polyline points="4 14 10 14 10 20" /><polyline points="20 10 14 10 14 4" /><line x1="14" y1="10" x2="21" y2="3" /><line x1="3" y1="21" x2="10" y2="14" /></svg>`;
+    const ICON_CLOSE_SM_SVG = `<svg class="ui-icon ui-icon-sm" style="width:10px;height:10px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>`;
+
+    // =========================================================================
+    // คลังไอคอนมินิมอลน่ารักๆ 10 แบบ สำหรับกรอบข้อความด้านบนจอกล้อง (ไม่มีอิโมจิ)
+    // =========================================================================
+    const CUTE_NOTE_ICONS = [
+      {
+        id: "heart",
+        label: "หัวใจ",
+        svg: `<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`
+      },
+      {
+        id: "sparkle",
+        label: "ประกายดาว",
+        svg: `<svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8L12 2z"/></svg>`
+      },
+      {
+        id: "music",
+        label: "โน้ตดนตรี",
+        svg: `<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`
+      },
+      {
+        id: "flower",
+        label: "ดอกไม้",
+        svg: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><path d="M12 4.5a2.5 2.5 0 0 1 2.5 2.5c0 1.38-2.5 2.5-2.5 2.5S9.5 8.38 9.5 7A2.5 2.5 0 0 1 12 4.5z"/><path d="M19.5 12a2.5 2.5 0 0 1-2.5 2.5c-1.38 0-2.5-2.5-2.5-2.5s1.12-2.5 2.5-2.5a2.5 2.5 0 0 1 2.5 2.5z"/><path d="M12 19.5a2.5 2.5 0 0 1-2.5-2.5c0-1.38 2.5-2.5 2.5-2.5s2.5 1.12 2.5 2.5a2.5 2.5 0 0 1-2.5 2.5z"/><path d="M4.5 12A2.5 2.5 0 0 1 7 9.5c1.38 0 2.5 2.5 2.5 2.5S8.38 14.5 7 14.5A2.5 2.5 0 0 1 4.5 12z"/></svg>`
+      },
+      {
+        id: "cloud",
+        label: "ก้อนเมฆ",
+        svg: `<svg viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>`
+      },
+      {
+        id: "moon",
+        label: "พระจันทร์เสี้ยว",
+        svg: `<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`
+      },
+      {
+        id: "star",
+        label: "ดวงดาว",
+        svg: `<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`
+      },
+      {
+        id: "ribbon",
+        label: "โบว์มินิมอล",
+        svg: `<svg viewBox="0 0 24 24"><path d="M12 12c-3-4-8-4.5-8-1s5 3 8 1z"/><path d="M12 12c3-4 8-4.5 8-1s-5 3-8 1z"/><path d="M12 12l-3.5 7"/><path d="M12 12l3.5 7"/><circle cx="12" cy="12" r="1.5"/></svg>`
+      },
+      {
+        id: "crown",
+        label: "มงกุฎ",
+        svg: `<svg viewBox="0 0 24 24"><path d="M3 18h18l-1.5-10-4.5 4-3-6-3 6-4.5-4L3 18z"/><line x1="4" y1="21" x2="20" y2="21"/></svg>`
+      },
+      {
+        id: "headphones",
+        label: "หูฟัง",
+        svg: `<svg viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>`
+      }
+    ];
+
+    const NOTE_TEXT_STORAGE_KEY = "chollar_center_note_text_v1";
+    const NOTE_ICON_STORAGE_KEY = "chollar_center_note_icon_v1";
+    let selectedNoteIconId = localStorage.getItem(NOTE_ICON_STORAGE_KEY) || "heart";
+
+    function initCenterNoteWidget() {
+      const savedText = localStorage.getItem(NOTE_TEXT_STORAGE_KEY);
+      noteTextInput.textContent = savedText !== null ? savedText : "Chollar Acoustic Session";
+
+      const renderCurrentIcon = () => {
+        const found = CUTE_NOTE_ICONS.find(ic => ic.id === selectedNoteIconId) || CUTE_NOTE_ICONS[0];
+        noteIconTrigger.innerHTML = found.svg;
+        noteIconPopover.querySelectorAll(".icon-choice-btn").forEach(btn => {
+          btn.classList.toggle("selected", btn.dataset.iconId === found.id);
+        });
+      };
+
+      noteIconPopover.innerHTML = CUTE_NOTE_ICONS.map(ic => `
+        <button type="button" class="icon-choice-btn" data-icon-id="${ic.id}" title="${ic.label}">
+          ${ic.svg}
+        </button>
+      `).join("");
+
+      noteIconPopover.querySelectorAll(".icon-choice-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          selectedNoteIconId = btn.dataset.iconId;
+          localStorage.setItem(NOTE_ICON_STORAGE_KEY, selectedNoteIconId);
+          renderCurrentIcon();
+          noteIconPopover.classList.remove("open");
+        });
+      });
+
+      noteIconTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        noteIconPopover.classList.toggle("open");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!centerNoteWidget.contains(e.target)) {
+          noteIconPopover.classList.remove("open");
+        }
+      });
+
+      noteTextInput.addEventListener("input", () => {
+        localStorage.setItem(NOTE_TEXT_STORAGE_KEY, noteTextInput.textContent);
+      });
+
+      noteTextInput.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          noteTextInput.blur();
+          noteIconPopover.classList.remove("open");
+        }
+      });
+
+      noteDoneBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        noteTextInput.blur();
+        noteIconPopover.classList.remove("open");
+      });
+
+      railCaptionBtn.addEventListener("click", () => {
+        const hidden = centerNoteWidget.classList.toggle("is-hidden");
+        railCaptionBtn.classList.toggle("is-active", !hidden);
+        noteIconPopover.classList.remove("open");
+      });
+
+      renderCurrentIcon();
+    }
+
+    // =========================================================================
+    // ระบบฐานข้อมูลคอร์ดครบทุกคีย์และทุกชนิดตามทฤษฎีดนตรีสากล (646 คอร์ด)
+    // =========================================================================
+    const ROOTS = [
+      { label: "C",  semitone: 0,  preferFlat: false },
+      { label: "C#", semitone: 1,  preferFlat: false },
+      { label: "Db", semitone: 1,  preferFlat: true  },
+      { label: "D",  semitone: 2,  preferFlat: false },
+      { label: "D#", semitone: 3,  preferFlat: false },
+      { label: "Eb", semitone: 3,  preferFlat: true  },
+      { label: "E",  semitone: 4,  preferFlat: false },
+      { label: "F",  semitone: 5,  preferFlat: true  },
+      { label: "F#", semitone: 6,  preferFlat: false },
+      { label: "Gb", semitone: 6,  preferFlat: true  },
+      { label: "G",  semitone: 7,  preferFlat: false },
+      { label: "G#", semitone: 8,  preferFlat: false },
+      { label: "Ab", semitone: 8,  preferFlat: true  },
+      { label: "A",  semitone: 9,  preferFlat: false },
+      { label: "A#", semitone: 10, preferFlat: false },
+      { label: "Bb", semitone: 10, preferFlat: true  },
+      { label: "B",  semitone: 11, preferFlat: false }
+    ];
+
+    const SHARP_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    const FLAT_NAMES  = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+
+    const CHORD_QUALITIES = [
+      { suffix: "",        zone: "basic",    intervals: [0, 4, 7] },
+      { suffix: "m",       zone: "basic",    intervals: [0, 3, 7] },
+      { suffix: "5",       zone: "basic",    intervals: [0, 7, 12] },
+      { suffix: "dim",     zone: "basic",    intervals: [0, 3, 6] },
+      { suffix: "aug",     zone: "basic",    intervals: [0, 4, 8] },
+      { suffix: "sus2",    zone: "basic",    intervals: [0, 2, 7] },
+      { suffix: "sus4",    zone: "basic",    intervals: [0, 5, 7] },
+      { suffix: "6",       zone: "basic",    intervals: [0, 4, 7, 9] },
+      { suffix: "m6",      zone: "basic",    intervals: [0, 3, 7, 9] },
+
+      { suffix: "add9",    zone: "add",      intervals: [0, 4, 7, 14] },
+      { suffix: "m(add9)", zone: "add",      intervals: [0, 3, 7, 14] },
+      { suffix: "add11",   zone: "add",      intervals: [0, 4, 7, 17] },
+      { suffix: "m(add11)",zone: "add",      intervals: [0, 3, 7, 17] },
+      { suffix: "6/9",     zone: "add",      intervals: [0, 4, 7, 9, 14] },
+      { suffix: "m6/9",    zone: "add",      intervals: [0, 3, 7, 9, 14] },
+
+      { suffix: "7",       zone: "seventh",  intervals: [0, 4, 7, 10] },
+      { suffix: "maj7",    zone: "seventh",  intervals: [0, 4, 7, 11] },
+      { suffix: "m7",      zone: "seventh",  intervals: [0, 3, 7, 10] },
+      { suffix: "m(maj7)", zone: "seventh",  intervals: [0, 3, 7, 11] },
+      { suffix: "m7b5",    zone: "seventh",  intervals: [0, 3, 6, 10] },
+      { suffix: "dim7",    zone: "seventh",  intervals: [0, 3, 6, 9] },
+      { suffix: "7sus4",   zone: "seventh",  intervals: [0, 5, 7, 10] },
+      { suffix: "7sus2",   zone: "seventh",  intervals: [0, 2, 7, 10] },
+      { suffix: "7#5",     zone: "seventh",  intervals: [0, 4, 8, 10] },
+      { suffix: "7b5",     zone: "seventh",  intervals: [0, 4, 6, 10] },
+      { suffix: "maj7#5",  zone: "seventh",  intervals: [0, 4, 8, 11] },
+
+      { suffix: "9",       zone: "extended", intervals: [0, 4, 7, 10, 14] },
+      { suffix: "maj9",    zone: "extended", intervals: [0, 4, 7, 11, 14] },
+      { suffix: "m9",      zone: "extended", intervals: [0, 3, 7, 10, 14] },
+      { suffix: "m(maj9)", zone: "extended", intervals: [0, 3, 7, 11, 14] },
+      { suffix: "9sus4",   zone: "extended", intervals: [0, 5, 7, 10, 14] },
+      { suffix: "7b9",     zone: "extended", intervals: [0, 4, 7, 10, 13] },
+      { suffix: "7#9",     zone: "extended", intervals: [0, 4, 7, 10, 15] },
+      { suffix: "11",      zone: "extended", intervals: [0, 7, 10, 14, 17] },
+      { suffix: "m11",     zone: "extended", intervals: [0, 3, 7, 10, 14, 17] },
+      { suffix: "maj7#11", zone: "extended", intervals: [0, 4, 7, 11, 18] },
+      { suffix: "13",      zone: "extended", intervals: [0, 4, 7, 10, 14, 21] },
+      { suffix: "maj13",   zone: "extended", intervals: [0, 4, 7, 11, 14, 21] },
+      { suffix: "m13",     zone: "extended", intervals: [0, 3, 7, 10, 14, 21] },
+      { suffix: "13sus4",  zone: "extended", intervals: [0, 5, 7, 10, 14, 21] },
+      { suffix: "7alt",    zone: "extended", intervals: [0, 4, 8, 10, 13] }
+    ];
+
+    const CHORD_DB = {};
+
+    ROOTS.forEach(rootObj => {
+      const baseMidi = rootObj.semitone <= 4 ? 60 + rootObj.semitone : 48 + rootObj.semitone;
+      const noteNames = rootObj.preferFlat ? FLAT_NAMES : SHARP_NAMES;
+
+      CHORD_QUALITIES.forEach(q => {
+        const chordName = `${rootObj.label}${q.suffix}`;
+        const midi = q.intervals.map(iv => baseMidi + iv);
+        const notes = q.intervals
+          .map(iv => noteNames[(rootObj.semitone + iv) % 12])
+          .filter((v, idx, arr) => arr.indexOf(v) === idx)
+          .join(" ");
+
+        CHORD_DB[chordName] = {
+          name: chordName,
+          root: rootObj.label,
+          zone: q.zone,
+          notes,
+          midi
+        };
+      });
+    });
+
+    CHORD_DB["G13sus"] = CHORD_DB["G13sus4"];
+
+    const FINGER_LABELS = ["นิ้วโป้ง", "นิ้วชี้", "ชี้ + กลาง", "โป้ง + ก้อย", "นิ้วก้อย"];
+    const FINGER_SHORT_LABELS = ["โป้ง", "ชี้", "ชี้+กลาง", "โป้ง+ก้อย", "ก้อย"];
+    const LEFT_DISPLAY_ORDER = [4, 3, 2, 1, 0];
+    const RIGHT_DISPLAY_ORDER = [0, 1, 2, 3, 4];
+
+    const SLOT_TIP_INDICES = [
+      [0],    // 0: โป้ง
+      [1],    // 1: ชี้
+      [1, 2], // 2: ชี้ + กลาง
+      [0, 4], // 3: โป้ง + ก้อย
+      [4]     // 4: ก้อย
+    ];
+
+    const DEFAULT_BASIC_MAP = {
+      left:  ["C", "Dm", "Em", "F", "G"],
+      right: ["Am", "Bm7b5", "A7", "D7", "E7"]
+    };
+
+    const DEFAULT_ADD9_MAP = {
+      left:  ["Cadd9", "Am(add9)", "Fadd9", "Gsus4", "G"],
+      right: ["Em7", "Dm7", "C", "Em", "Am7"]
+    };
+
+    const DEFAULT_JAZZ7_MAP = {
+      left:  ["Cmaj9", "Am9", "Dm9", "G13sus4", "Em7"],
+      right: ["Fmaj7#11", "Fm9", "Bbmaj7", "E7#9", "A7b9"]
+    };
+
+    const STORAGE_KEY = "fingerChordCustomMap_v2";
+
+    function loadCustomMap() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) ||
+                      JSON.parse(localStorage.getItem("fingerChordCustomMap_v1"));
+        if (saved && Array.isArray(saved.left) && Array.isArray(saved.right)) {
+          return saved;
+        }
+      } catch (_) {}
+      return structuredClone(DEFAULT_BASIC_MAP);
+    }
+
+    function saveCustomMap() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(customMap));
+    }
+
+    let customMap = loadCustomMap();
+    let selectedSlot = null;
+    let activeRootFilter = "ALL";
+    let isFingerHudOpen = false;
+    let isSimulatedFullscreen = false;
+
+    const midiToFreq = (m) => 440 * Math.pow(2, (m - 69) / 12);
+
+    const HAND_CONNECTIONS = [
+      [0,1],[1,2],[2,3],[3,4],
+      [0,5],[5,6],[6,7],[7,8],
+      [5,9],[9,10],[10,11],[11,12],
+      [9,13],[13,14],[14,15],[15,16],
+      [13,17],[0,17],[17,18],[18,19],[19,20]
+    ];
+
+    let handLandmarker = null;
+    let currentStream = null;
+    let lastVideoTime = -1;
+    let lastDetectTimestamp = 0;
+    let isLoopRunning = false;
+
+    let audioCtx = null;
+    let masterFilter = null;
+    let reverbGain = null;
+    let delayGain = null;
+    let synthBus = null;
+    let analyserNode = null;
+    let waveTimeData = null;
+    let waveFreqData = null;
+    let wavePhase = 0;
+    let smoothedWaveEnergy = 0;
+
+    // เก็บเสียงที่กำลังเฟดหางเสียงอยู่ เพื่อให้กำมือตัดเสียงเงียบทั้งหมดได้ทันที
+    const activeLingeringVoices = new Set();
+
+    function createHandTrackerState() {
+      return {
+        fingerExt: [false, false, false, false, false], // [thumb, index, middle, ring, pinky]
+        confirmedStates: [false, false, false, false, false],
+        rawStates: [false, false, false, false, false],
+        holdCounters: [0, 0, 0, 0, 0],
+        scores: [0, 0, 0, 0, 0],
+        prevPlayedStates: [false, false, false, false, false],
+        lastTriggerTimes: [0, 0, 0, 0, 0],
+        sustainVoices: [null, null, null, null, null],
+        triggerVoices: [null, null, null, null, null],
+        baseY: [null, null, null, null, null],
+        voicingStep: [0, 0, 0, 0, 0],
+        voicingLabels: ["", "", "", "", ""],
+        activeLiftLabel: "",
+        missingFrames: 0,
+        lastPalmPos: null,
+        fistFrames: 0,
+        fistMuted: false,
+        openHandFrames: 0,
+        prevNormTips: null,
+        candidateSlot: -1,
+        candidateSince: 0,
+        lastReleaseTime: 0,
+        lastReleasedSlot: -1,
+        slotCandidateSince: [0, 0, 0, 0, 0]
+      };
+    }
+
+    const leftTracker = createHandTrackerState();
+    const rightTracker = createHandTrackerState();
+
+    // =========================================================================
+    // ระบบสลับโหมดเต็มหน้าจอ (Fullscreen) และผังคอร์ดบนหน้าจอกล้อง
+    // =========================================================================
+    function syncCanvasSize() {
+      const w = cameraStage.clientWidth || video.videoWidth || 640;
+      const h = cameraStage.clientHeight || video.videoHeight || 480;
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+      }
+    }
+
+    function updateFullscreenUI() {
+      const nativeFs = document.fullscreenElement === cameraStage || document.webkitFullscreenElement === cameraStage;
+      const active = nativeFs || isSimulatedFullscreen;
+      cameraStage.classList.toggle("is-fullscreen", active);
+      document.body.classList.toggle("lock-scroll", active);
+      fullscreenBtn.classList.toggle("active", active);
+      fullscreenBtn.innerHTML = active
+        ? `${ICON_MIN_SVG}<span>ย่อจอ</span>`
+        : `${ICON_MAX_SVG}<span>เต็มจอ</span>`;
+      setTimeout(syncCanvasSize, 60);
+    }
+
+    async function toggleFullscreen() {
+      const nativeFs = document.fullscreenElement === cameraStage || document.webkitFullscreenElement === cameraStage;
+
+      if (nativeFs || isSimulatedFullscreen) {
+        isSimulatedFullscreen = false;
+        if (nativeFs) {
+          try {
+            if (document.exitFullscreen) await document.exitFullscreen();
+            else if (document.webkitExitFullscreen) await document.webkitExitFullscreen();
+          } catch (_) {}
+        }
+        updateFullscreenUI();
+        return;
+      }
+
+      try {
+        if (cameraStage.requestFullscreen) {
+          await cameraStage.requestFullscreen();
+        } else if (cameraStage.webkitRequestFullscreen) {
+          await cameraStage.webkitRequestFullscreen();
+        } else {
+          isSimulatedFullscreen = true;
+        }
+      } catch (_) {
+        isSimulatedFullscreen = true;
+      }
+      updateFullscreenUI();
+    }
+
+    function setFingerHudOpen(open) {
+      isFingerHudOpen = open;
+      fingerHudDrawer.classList.toggle("open", open);
+      fingerMapFab.style.display = open ? "none" : "inline-flex";
+      updateLiveChordPill();
+    }
+
+    function updateLiveChordPill() {
+      if (isFingerHudOpen) {
+        liveChordPill.classList.remove("visible");
+        return;
+      }
+
+      const activeLabels = [];
+      for (let i = 0; i < 5; i++) {
+        if (leftTracker.prevPlayedStates[i] && customMap.left[i]) {
+          const liftTag = leftTracker.voicingLabels[i] ? ` (${leftTracker.voicingLabels[i]})` : "";
+          activeLabels.push(`ซ้าย [${FINGER_SHORT_LABELS[i]}] : ${customMap.left[i]}${liftTag}`);
+        }
+      }
+      for (let i = 0; i < 5; i++) {
+        if (rightTracker.prevPlayedStates[i] && customMap.right[i]) {
+          const liftTag = rightTracker.voicingLabels[i] ? ` (${rightTracker.voicingLabels[i]})` : "";
+          activeLabels.push(`ขวา [${FINGER_SHORT_LABELS[i]}] : ${customMap.right[i]}${liftTag}`);
+        }
+      }
+
+      if (activeLabels.length > 0) {
+        liveChordPill.textContent = activeLabels.join("  •  ");
+        liveChordPill.classList.add("visible");
+      } else {
+        liveChordPill.classList.remove("visible");
+      }
+    }
+
+    // =========================================================================
+    // ระบบตรวจจับท่ามือ 5 ท่า:
+    // - กำมือ = ไม่จับนิ้วใดๆ เด็ดขาด และตัดเสียงทั้งหมดเงียบสนิททันที
+    // - แบมือ 5 นิ้ว = ไม่จับอะไรทั้งนั้น
+    // - นิ้วชี้ / ชี้+กลาง / โป้ง / โป้ง+ก้อย / ก้อย = จับติดง่ายและล็อกนิ่งสนิท
+    // =========================================================================
+    function getStabilityConfig() {
+      const mode = stabilitySelect.value;
+      if (mode === "strict") {
+        return {
+          angleOn: 122, angleOff: 96,
+          dipAngleOn: 120, dipAngleOff: 96,
+          reachOn: 0.14, reachOff: 0.05,
+          mcpTipRatioOn: 1.32, mcpTipRatioOff: 1.14,
+          thumbAngleOn: 130, thumbAngleOff: 108,
+          thumbIndexReachOn: 0.48, thumbIndexReachOff: 0.37,
+          thumbMiddleReachOn: 0.60, thumbMiddleReachOff: 0.48,
+          thumbPinkySpreadOn: 0.88, thumbPinkySpreadOff: 0.74,
+          onsetDwellMs: 38,
+          switchBonusMs: 16,
+          subsetDropBonusMs: 18,
+          settleSpeedMax: 0.36
+        };
+      } else if (mode === "fast") {
+        return {
+          angleOn: 110, angleOff: 86,
+          dipAngleOn: 110, dipAngleOff: 86,
+          reachOn: 0.09, reachOff: 0.02,
+          mcpTipRatioOn: 1.22, mcpTipRatioOff: 1.08,
+          thumbAngleOn: 120, thumbAngleOff: 100,
+          thumbIndexReachOn: 0.42, thumbIndexReachOff: 0.33,
+          thumbMiddleReachOn: 0.54, thumbMiddleReachOff: 0.44,
+          thumbPinkySpreadOn: 0.80, thumbPinkySpreadOff: 0.68,
+          onsetDwellMs: 12,
+          switchBonusMs: 6,
+          subsetDropBonusMs: 8,
+          settleSpeedMax: 0.55
+        };
+      }
+      return {
+        angleOn: 115, angleOff: 90,
+        dipAngleOn: 114, dipAngleOff: 90,
+        reachOn: 0.11, reachOff: 0.03,
+        mcpTipRatioOn: 1.26, mcpTipRatioOff: 1.10,
+        thumbAngleOn: 125, thumbAngleOff: 104,
+        thumbIndexReachOn: 0.45, thumbIndexReachOff: 0.35,
+        thumbMiddleReachOn: 0.57, thumbMiddleReachOff: 0.46,
+        thumbPinkySpreadOn: 0.84, thumbPinkySpreadOff: 0.71,
+        onsetDwellMs: 22,
+        switchBonusMs: 10,
+        subsetDropBonusMs: 12,
+        settleSpeedMax: 0.45
+      };
+    }
+
+    function getJointAngle(a, b, c) {
+      const bax = a.x - b.x;
+      const bay = a.y - b.y;
+      const bcx = c.x - b.x;
+      const bcy = c.y - b.y;
+      const dot = bax * bcx + bay * bcy;
+      const mag = Math.hypot(bax, bay) * Math.hypot(bcx, bcy);
+      if (mag === 0) return 0;
+      const cosAngle = Math.max(-1, Math.min(1, dot / mag));
+      return Math.acos(cosAngle) * (180 / Math.PI);
+    }
+
+    // ตัดเสียงที่กำลังดังหรือค้างหางเสียงทั้งหมดทันทีเมื่อกำมือ
+    function silenceAllSoundOnFist(tracker) {
+      for (let i = 0; i < 5; i++) {
+        if (tracker.sustainVoices[i]) {
+          tracker.sustainVoices[i].forEach(v => v && v.stop(true));
+          tracker.sustainVoices[i] = null;
+        }
+        if (tracker.triggerVoices[i]) {
+          tracker.triggerVoices[i].forEach(v => v && v.stop(true));
+          tracker.triggerVoices[i] = null;
+        }
+        tracker.baseY[i] = null;
+        tracker.voicingStep[i] = 0;
+        tracker.voicingLabels[i] = "";
+      }
+      tracker.activeLiftLabel = "";
+
+      activeLingeringVoices.forEach(v => {
+        try { v.stop(true); } catch (_) {}
+      });
+      activeLingeringVoices.clear();
+    }
+
+    function evaluateHandFingers(landmarks, tracker) {
+      const cfg = getStabilityConfig();
+      const now = performance.now();
+      const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+      const wrist = landmarks[0];
+      const palmSize = Math.max(dist(wrist, landmarks[9]), 0.001);
+
+      const tipIds = [4, 8, 12, 16, 20];
+      const currNormTips = tipIds.map(id => ({
+        x: (landmarks[id].x - wrist.x) / palmSize,
+        y: (landmarks[id].y - wrist.y) / palmSize
+      }));
+
+      const tipSpeeds = [0, 0, 0, 0, 0];
+      if (tracker.prevNormTips) {
+        for (let i = 0; i < 5; i++) {
+          tipSpeeds[i] = Math.hypot(
+            currNormTips[i].x - tracker.prevNormTips[i].x,
+            currNormTips[i].y - tracker.prevNormTips[i].y
+          );
+        }
+      }
+      tracker.prevNormTips = currNormTips;
+
+      // 1) ประเมินนิ้วโป้ง (landmarks 1-2-3-4)
+      // เช็กทั้งมุมข้อต่อ + ระยะกางออกจากโคนนิ้วชี้และโคนนิ้วกลาง เพื่อไม่ให้นิ้วโป้งที่พักข้างมือตอนชูนิ้วชี้เด้งหลอก
+      const thumbAngle = getJointAngle(landmarks[2], landmarks[3], landmarks[4]);
+      const thumbBaseAngle = getJointAngle(landmarks[1], landmarks[2], landmarks[3]);
+      const thumbSpreadIndex = dist(landmarks[4], landmarks[5]) / palmSize;
+      const thumbSpreadMiddle = dist(landmarks[4], landmarks[9]) / palmSize;
+      const thumbSpreadPinky = dist(landmarks[4], landmarks[17]) / palmSize;
+
+      const prevThumb = tracker.fingerExt[0];
+      const thumbExt = prevThumb
+        ? (
+            thumbAngle >= cfg.thumbAngleOff &&
+            thumbBaseAngle >= 115 &&
+            thumbSpreadIndex >= cfg.thumbIndexReachOff &&
+            thumbSpreadMiddle >= cfg.thumbMiddleReachOff &&
+            thumbSpreadPinky >= cfg.thumbPinkySpreadOff
+          )
+        : (
+            thumbAngle >= cfg.thumbAngleOn &&
+            thumbBaseAngle >= 125 &&
+            thumbSpreadIndex >= cfg.thumbIndexReachOn &&
+            thumbSpreadMiddle >= cfg.thumbMiddleReachOn &&
+            thumbSpreadPinky >= cfg.thumbPinkySpreadOn
+          );
+      tracker.fingerExt[0] = thumbExt;
+
+      // นิ้วโป้งกางออกกว้างมากเป็นพิเศษ (ใช้แยกกรณีชูนิ้วชี้แล้วนิ้วโป้งพักข้างมือตามธรรมชาติ)
+      const thumbWideOut =
+        thumbAngle >= 134 &&
+        thumbSpreadIndex >= 0.54 &&
+        thumbSpreadMiddle >= 0.66;
+
+      const thumbReachRatio = Math.min(
+        (thumbSpreadIndex - 0.34) / Math.max(0.08, cfg.thumbIndexReachOn - 0.34),
+        (thumbSpreadMiddle - 0.44) / Math.max(0.08, cfg.thumbMiddleReachOn - 0.44)
+      );
+      const thumbAngleRatio = (thumbAngle - 102) / Math.max(14, cfg.thumbAngleOn - 102);
+      const thumbScore = Math.max(0, Math.min(100, Math.min(thumbReachRatio, thumbAngleRatio) * 100));
+
+      // 2) ประเมินครบทั้ง 4 นิ้ว: นิ้วชี้ (1), นิ้วกลาง (2), นิ้วนาง (3), นิ้วก้อย (4)
+      // บังคับเช็ก: ปลายนิ้วต้องยื่นพ้นข้อกลางออกไปจริง (reach > 0) และระยะ MCP->TIP ต้องยาวกว่า MCP->PIP ชัดเจน
+      // เพื่อไม่ให้นิ้วที่งอเข้าฝ่ามือตอนกำมือ (เช่น นิ้วก้อยในกำมือ) หลุดเข้ามาจับได้เด็ดขาด
+      const trackedFingers = [
+        { extIdx: 1, joints: [5, 6, 7, 8],     angleOffset: -6, reachOffset: -0.02, ratioOffset: -0.04 },
+        { extIdx: 2, joints: [9, 10, 11, 12],  angleOffset: 4,  reachOffset: 0.02,  ratioOffset: 0.02  },
+        { extIdx: 3, joints: [13, 14, 15, 16], angleOffset: 4,  reachOffset: 0.02,  ratioOffset: 0.02  },
+        { extIdx: 4, joints: [17, 18, 19, 20], angleOffset: -2, reachOffset: 0.00,  ratioOffset: 0.00  }
+      ];
+
+      const fExt = [false, false, false, false];
+      const fScores = [0, 0, 0, 0];
+
+      trackedFingers.forEach(({ extIdx, joints: [mcpIdx, pipIdx, dipIdx, tipIdx], angleOffset, reachOffset, ratioOffset }, i) => {
+        const overallAngle = getJointAngle(landmarks[mcpIdx], landmarks[pipIdx], landmarks[tipIdx]);
+        const pipAngle = getJointAngle(landmarks[mcpIdx], landmarks[pipIdx], landmarks[dipIdx]);
+        const dipAngle = getJointAngle(landmarks[pipIdx], landmarks[dipIdx], landmarks[tipIdx]);
+
+        const tipWristDist = dist(wrist, landmarks[tipIdx]);
+        const pipWristDist = dist(wrist, landmarks[pipIdx]);
+        const reach = (tipWristDist - pipWristDist) / palmSize;
+
+        const mcpToPip = Math.max(dist(landmarks[mcpIdx], landmarks[pipIdx]), 0.001);
+        const mcpToTip = dist(landmarks[mcpIdx], landmarks[tipIdx]);
+        const mcpTipRatio = mcpToTip / mcpToPip;
+
+        const wasExt = tracker.fingerExt[extIdx];
+        const effAngleOn = cfg.angleOn + angleOffset;
+        const effAngleOff = cfg.angleOff + angleOffset;
+        const effDipOn = cfg.dipAngleOn + angleOffset;
+        const effDipOff = cfg.dipAngleOff + angleOffset;
+        const effReachOn = cfg.reachOn + reachOffset;
+        const effReachOff = cfg.reachOff + reachOffset;
+        const effMcpTipOn = cfg.mcpTipRatioOn + ratioOffset;
+        const effMcpTipOff = cfg.mcpTipRatioOff + ratioOffset;
+
+        const isExt = wasExt
+          ? (
+              overallAngle >= effAngleOff &&
+              pipAngle >= effAngleOff &&
+              dipAngle >= effDipOff &&
+              reach >= effReachOff &&
+              mcpTipRatio >= effMcpTipOff
+            )
+          : (
+              overallAngle >= effAngleOn &&
+              pipAngle >= effAngleOn &&
+              dipAngle >= effDipOn &&
+              reach >= effReachOn &&
+              mcpTipRatio >= effMcpTipOn
+            );
+
+        tracker.fingerExt[extIdx] = isExt;
+        fExt[i] = isExt;
+
+        const angleNorm = (overallAngle - 85) / Math.max(14, effAngleOn - 85);
+        const reachNorm = reach / Math.max(0.08, effReachOn);
+        const ratioNorm = (mcpTipRatio - 1.0) / Math.max(0.15, effMcpTipOn - 1.0);
+        const combinedNorm = Math.min(1.2, (angleNorm * 0.4 + reachNorm * 0.3 + ratioNorm * 0.3));
+        fScores[i] = Math.max(0, Math.min(100, combinedNorm * 100));
+      });
+
+      const [indexExt, middleExt, ringExt, pinkyExt] = fExt;
+      const [indexScore, middleScore, , pinkyScore] = fScores;
+
+      const fourFingerOpenCount = (indexExt ? 1 : 0) + (middleExt ? 1 : 0) + (ringExt ? 1 : 0) + (pinkyExt ? 1 : 0);
+
+      // กรณี "ชู 5 นิ้ว" (หรือแบมือ 3-5 นิ้ว): ไม่จับอะไรทั้งนั้น
+      const isOpenHand = fourFingerOpenCount >= 3;
+
+      // กรณี "กำมือ": นิ้วชี้ กลาง นาง ก้อย พับลงทั้งหมด และนิ้วโป้งไม่กางออก
+      const isFist = (fourFingerOpenCount === 0) && !thumbExt;
+
+      if (isOpenHand) {
+        tracker.openHandFrames++;
+        tracker.fistFrames = 0;
+        tracker.fistMuted = false;
+        for (let i = 0; i < 5; i++) {
+          tracker.confirmedStates[i] = false;
+          tracker.rawStates[i] = false;
+          tracker.holdCounters[i] = 0;
+          tracker.scores[i] = 0;
+          tracker.slotCandidateSince[i] = 0;
+        }
+        tracker.candidateSlot = -1;
+        tracker.candidateSince = 0;
+        return [false, false, false, false, false];
+      }
+      tracker.openHandFrames = 0;
+
+      if (isFist) {
+        tracker.fistFrames++;
+        for (let i = 0; i < 5; i++) {
+          tracker.confirmedStates[i] = false;
+          tracker.rawStates[i] = false;
+          tracker.holdCounters[i] = 0;
+          tracker.scores[i] = 0;
+          tracker.slotCandidateSince[i] = 0;
+        }
+        tracker.candidateSlot = -1;
+        tracker.candidateSince = 0;
+
+        // กำมือ = ตัดเสียงทั้งหมดเงียบสนิทเสมือนสั่งหยุด
+        if (tracker.fistFrames >= 2 && !tracker.fistMuted) {
+          tracker.fistMuted = true;
+          silenceAllSoundOnFist(tracker);
+        }
+        return [false, false, false, false, false];
+      }
+
+      tracker.fistFrames = 0;
+      tracker.fistMuted = false;
+
+      // 3) ตรวจสอบ 5 ท่าคอร์ดเฉพาะตอนที่ชูนิ้วนั้นจริงๆ เท่านั้น
+      // - นิ้วชี้ และ ชี้+กลาง ยอมให้นิ้วโป้งพักข้างมือตามธรรมชาติได้ (ไม่โดนนิ้วโป้งที่พักอยู่บล็อก)
+      const isThumbOnly   = thumbExt && !indexExt && !middleExt && !ringExt && !pinkyExt;
+      const isIndexOnly   = indexExt && !middleExt && !ringExt && !pinkyExt && !thumbWideOut;
+      const isIndexMiddle = indexExt && middleExt && !ringExt && !pinkyExt;
+      const isThumbPinky  = thumbExt && pinkyExt && !indexExt && !middleExt && !ringExt;
+      const isPinkyOnly   = pinkyExt && !thumbExt && !indexExt && !middleExt && !ringExt;
+
+      tracker.rawStates = [
+        isThumbOnly,
+        isIndexOnly,
+        isIndexMiddle,
+        isThumbPinky,
+        isPinkyOnly
+      ];
+
+      tracker.scores = [
+        isThumbOnly   ? Math.max(65, thumbScore) : 0,
+        isIndexOnly   ? Math.max(68, indexScore) : 0,
+        isIndexMiddle ? Math.max(68, Math.round((indexScore + middleScore) / 2)) : 0,
+        isThumbPinky  ? Math.max(68, Math.round((thumbScore + pinkyScore) / 2)) : 0,
+        isPinkyOnly   ? Math.max(65, pinkyScore) : 0
+      ];
+
+      // โหมดทีละ 1 ท่า/มือ: ค้างเสียงเฉพาะตอนที่ยังชูนิ้วท่านั้นอยู่ และตัดทันทีเมื่อพับนิ้วลงหรือเปลี่ยนนิ้ว
+      if (soloFingerToggle.checked) {
+        let rawCandidate = -1;
+        let bestRawScore = -1;
+        for (let i = 0; i < 5; i++) {
+          if (tracker.rawStates[i] && tracker.scores[i] > bestRawScore) {
+            bestRawScore = tracker.scores[i];
+            rawCandidate = i;
+          }
+        }
+
+        const prevConfirmed = tracker.confirmedStates.findIndex(v => v);
+
+        const isPrimaryHeld = (slotIdx) => {
+          if (slotIdx === 0) return thumbExt && !indexExt && !middleExt && !pinkyExt;
+          if (slotIdx === 1) return indexExt && !middleExt && !ringExt && !pinkyExt;
+          if (slotIdx === 2) return indexExt && middleExt && !ringExt && !pinkyExt;
+          if (slotIdx === 3) return thumbExt && pinkyExt && !indexExt && !middleExt;
+          if (slotIdx === 4) return pinkyExt && !indexExt && !middleExt && !ringExt;
+          return false;
+        };
+
+        if (prevConfirmed !== -1 && (rawCandidate === prevConfirmed || (rawCandidate === -1 && isPrimaryHeld(prevConfirmed)))) {
+          tracker.holdCounters[prevConfirmed] = 0;
+          tracker.candidateSlot = prevConfirmed;
+          tracker.candidateSince = 0;
+          if (tracker.scores[prevConfirmed] < 68) {
+            tracker.scores[prevConfirmed] = 78;
+          }
+          return [0, 1, 2, 3, 4].map(i => i === prevConfirmed);
+        }
+
+        if (rawCandidate === -1) {
+          tracker.candidateSlot = -1;
+          tracker.candidateSince = 0;
+          if (prevConfirmed !== -1) {
+            tracker.holdCounters[prevConfirmed]++;
+            if (tracker.holdCounters[prevConfirmed] >= 2) {
+              tracker.confirmedStates[prevConfirmed] = false;
+              tracker.holdCounters[prevConfirmed] = 0;
+              tracker.lastReleaseTime = now;
+              tracker.lastReleasedSlot = prevConfirmed;
+              return [false, false, false, false, false];
+            }
+            return [0, 1, 2, 3, 4].map(i => i === prevConfirmed);
+          }
+          return [false, false, false, false, false];
+        }
+
+        if (prevConfirmed !== -1) {
+          tracker.confirmedStates[prevConfirmed] = false;
+          tracker.holdCounters[prevConfirmed] = 0;
+          tracker.lastReleaseTime = now;
+          tracker.lastReleasedSlot = prevConfirmed;
+        }
+
+        if (tracker.candidateSlot !== rawCandidate) {
+          tracker.candidateSlot = rawCandidate;
+          tracker.candidateSince = now;
+        }
+
+        const targetTips = SLOT_TIP_INDICES[rawCandidate] || [0, 1, 2, 3, 4];
+        let targetTipSpeed = 0;
+        for (const idx of targetTips) {
+          if (tipSpeeds[idx] > targetTipSpeed) targetTipSpeed = tipSpeeds[idx];
+        }
+
+        const isSubsetDrop =
+          (tracker.lastReleasedSlot === 2 && rawCandidate === 1) ||
+          (tracker.lastReleasedSlot === 3 && (rawCandidate === 0 || rawCandidate === 4));
+        const justSwitched = (now - tracker.lastReleaseTime) < 150;
+        const requiredDwellMs = cfg.onsetDwellMs
+          + (justSwitched ? cfg.switchBonusMs : 0)
+          + (isSubsetDrop && justSwitched ? cfg.subsetDropBonusMs : 0);
+
+        const heldMs = now - tracker.candidateSince;
+        const fingersSettled = targetTipSpeed <= cfg.settleSpeedMax;
+
+        if (heldMs >= requiredDwellMs && (fingersSettled || heldMs >= requiredDwellMs + 16)) {
+          for (let i = 0; i < 5; i++) {
+            tracker.confirmedStates[i] = (i === rawCandidate);
+            tracker.holdCounters[i] = 0;
+          }
+          return [0, 1, 2, 3, 4].map(i => i === rawCandidate);
+        }
+
+        return [false, false, false, false, false];
+      }
+
+      // กรณีปิด "ทีละ 1 ท่า/มือ"
+      const justSwitchedMulti = (now - tracker.lastReleaseTime) < 150;
+      const requiredMultiDwell = cfg.onsetDwellMs + (justSwitchedMulti ? cfg.switchBonusMs : 0);
+
+      for (let i = 0; i < 5; i++) {
+        if (tracker.rawStates[i]) {
+          if (!tracker.confirmedStates[i]) {
+            if (tracker.slotCandidateSince[i] === 0) {
+              tracker.slotCandidateSince[i] = now;
+            }
+            const targetTips = SLOT_TIP_INDICES[i] || [0, 1, 2, 3, 4];
+            let targetTipSpeed = 0;
+            for (const idx of targetTips) {
+              if (tipSpeeds[idx] > targetTipSpeed) targetTipSpeed = tipSpeeds[idx];
+            }
+            const held = now - tracker.slotCandidateSince[i];
+            if (held >= requiredMultiDwell && (targetTipSpeed <= cfg.settleSpeedMax || held >= requiredMultiDwell + 16)) {
+              tracker.confirmedStates[i] = true;
+              tracker.holdCounters[i] = 0;
+            }
+          } else {
+            tracker.holdCounters[i] = 0;
+          }
+        } else {
+          tracker.slotCandidateSince[i] = 0;
+          if (tracker.confirmedStates[i]) {
+            tracker.holdCounters[i]++;
+            if (tracker.holdCounters[i] >= 2) {
+              tracker.confirmedStates[i] = false;
+              tracker.holdCounters[i] = 0;
+              tracker.lastReleaseTime = now;
+              tracker.lastReleasedSlot = i;
+            }
+          }
+        }
+      }
+
+      return [...tracker.confirmedStates];
+    }
+
+    function resetHandTracker(tracker) {
+      for (let i = 0; i < 5; i++) {
+        tracker.fingerExt[i] = false;
+        tracker.confirmedStates[i] = false;
+        tracker.rawStates[i] = false;
+        tracker.holdCounters[i] = 0;
+        tracker.scores[i] = 0;
+        tracker.baseY[i] = null;
+        tracker.voicingStep[i] = 0;
+        tracker.voicingLabels[i] = "";
+        tracker.slotCandidateSince[i] = 0;
+      }
+      tracker.activeLiftLabel = "";
+      tracker.missingFrames = 0;
+      tracker.lastPalmPos = null;
+      tracker.fistFrames = 0;
+      tracker.fistMuted = false;
+      tracker.openHandFrames = 0;
+      tracker.prevNormTips = null;
+      tracker.candidateSlot = -1;
+      tracker.candidateSince = 0;
+      tracker.lastReleaseTime = 0;
+      tracker.lastReleasedSlot = -1;
+    }
+
+    // =========================================================================
+    // วาดทั้งกรอบ 10 ช่องด้านล่าง และผังคอร์ดพับได้บนหน้าจอกล้อง
+    // =========================================================================
+    function renderFingerHudPills() {
+      const leftHud = document.getElementById("hudLeftPills");
+      const rightHud = document.getElementById("hudRightPills");
+
+      const buildPillHTML = (side, fingerIdx) => {
+        const chordKey = customMap[side][fingerIdx];
+        return `
+          <div class="mini-pill ${chordKey ? "" : "empty"}"
+               id="hud-pill-${side}-${fingerIdx}"
+               data-side="${side}"
+               data-idx="${fingerIdx}"
+               title="${FINGER_LABELS[fingerIdx]}: ${chordKey || "ว่าง"}">
+            <div class="mp-chord">${chordKey || "-"}</div>
+            <div class="mp-finger">${FINGER_SHORT_LABELS[fingerIdx]}</div>
+          </div>
+        `;
+      };
+
+      leftHud.innerHTML = LEFT_DISPLAY_ORDER.map(idx => buildPillHTML("left", idx)).join("");
+      rightHud.innerHTML = RIGHT_DISPLAY_ORDER.map(idx => buildPillHTML("right", idx)).join("");
+
+      document.querySelectorAll(".mini-pill").forEach(pill => {
+        pill.addEventListener("click", async () => {
+          const chordKey = customMap[pill.dataset.side][Number(pill.dataset.idx)];
+          if (chordKey && CHORD_DB[chordKey]) {
+            await ensureAudioReady();
+            playChordTrigger(CHORD_DB[chordKey].midi);
+          }
+        });
+      });
+    }
+
+    function renderFingerSlots() {
+      const leftContainer = document.getElementById("leftSlots");
+      const rightContainer = document.getElementById("rightSlots");
+
+      const buildSlotHTML = (side, fingerIdx) => {
+        const chordKey = customMap[side][fingerIdx];
+        const chord = chordKey ? CHORD_DB[chordKey] : null;
+        const isSelected = selectedSlot && selectedSlot.side === side && selectedSlot.index === fingerIdx;
+        const isCombo = fingerIdx === 2 || fingerIdx === 3;
+
+        return `
+          <div class="slot ${chord ? "filled" : "empty"} ${isSelected ? "selected-slot" : ""} ${isCombo ? "combo-slot" : ""}"
+               id="slot-${side}-${fingerIdx}"
+               data-side="${side}"
+               data-idx="${fingerIdx}">
+            ${chord ? `<button class="clear-btn" data-clear-side="${side}" data-clear-idx="${fingerIdx}" title="ลบคอร์ดออก">${ICON_CLOSE_SM_SVG}</button>` : ""}
+            <div class="chord-name">${chord ? chord.name : "+ วาง"}</div>
+            <div class="chord-notes">${chord ? chord.notes : "ว่าง"}</div>
+            <div class="finger-tag">${FINGER_LABELS[fingerIdx]}</div>
+            <div class="meter-track"><div class="meter-fill" id="meter-${side}-${fingerIdx}"></div></div>
+          </div>
+        `;
+      };
+
+      leftContainer.innerHTML = LEFT_DISPLAY_ORDER.map(idx => buildSlotHTML("left", idx)).join("");
+      rightContainer.innerHTML = RIGHT_DISPLAY_ORDER.map(idx => buildSlotHTML("right", idx)).join("");
+
+      document.querySelectorAll(".slot").forEach(slotEl => {
+        const side = slotEl.dataset.side;
+        const idx = Number(slotEl.dataset.idx);
+
+        slotEl.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          slotEl.classList.add("drag-over");
+        });
+
+        slotEl.addEventListener("dragleave", () => {
+          slotEl.classList.remove("drag-over");
+        });
+
+        slotEl.addEventListener("drop", async (e) => {
+          e.preventDefault();
+          slotEl.classList.remove("drag-over");
+          const chordKey = e.dataTransfer.getData("text/plain");
+          if (chordKey && CHORD_DB[chordKey]) {
+            assignChordToSlot(side, idx, chordKey);
+            await ensureAudioReady();
+            playChordTrigger(CHORD_DB[chordKey].midi);
+          }
+        });
+
+        slotEl.addEventListener("click", async (e) => {
+          if (e.target.closest(".clear-btn")) return;
+          if (selectedSlot && selectedSlot.side === side && selectedSlot.index === idx) {
+            selectedSlot = null;
+          } else {
+            selectedSlot = { side, index: idx };
+            const chordKey = customMap[side][idx];
+            if (chordKey && CHORD_DB[chordKey]) {
+              await ensureAudioReady();
+              playChordTrigger(CHORD_DB[chordKey].midi);
+            }
+          }
+          renderFingerSlots();
+        });
+      });
+
+      document.querySelectorAll(".clear-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          assignChordToSlot(btn.dataset.clearSide, Number(btn.dataset.clearIdx), null);
+        });
+      });
+
+      renderFingerHudPills();
+    }
+
+    function assignChordToSlot(side, idx, chordKey) {
+      stopAllSustains(true);
+      customMap[side][idx] = chordKey;
+      saveCustomMap();
+      renderFingerSlots();
+    }
+
+    function renderRootTabs() {
+      const container = document.getElementById("rootTabs");
+      const allKeys = ["ALL", ...ROOTS.map(r => r.label)];
+      container.innerHTML = allKeys.map(root => `
+        <button class="root-btn ${activeRootFilter === root ? "active" : ""}" data-root="${root}">
+          ${root === "ALL" ? "ทุกคีย์" : root}
+        </button>
+      `).join("");
+
+      container.querySelectorAll(".root-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          activeRootFilter = btn.dataset.root;
+          renderRootTabs();
+          renderChordZones();
+        });
+      });
+    }
+
+    function renderChordZones() {
+      const zoneBasic = document.getElementById("zoneBasic");
+      const zoneAdd = document.getElementById("zoneAdd");
+      const zoneSeventh = document.getElementById("zoneSeventh");
+      const zoneExtended = document.getElementById("zoneExtended");
+
+      zoneBasic.innerHTML = "";
+      zoneAdd.innerHTML = "";
+      zoneSeventh.innerHTML = "";
+      zoneExtended.innerHTML = "";
+
+      const query = chordSearchInput.value.trim().toLowerCase();
+      const counts = { basic: 0, add: 0, seventh: 0, extended: 0 };
+
+      Object.entries(CHORD_DB).forEach(([key, chord]) => {
+        if (key === "G13sus") return;
+        if (activeRootFilter !== "ALL" && chord.root !== activeRootFilter) return;
+        if (query && !chord.name.toLowerCase().includes(query) && !chord.notes.toLowerCase().includes(query)) {
+          return;
+        }
+
+        const chip = document.createElement("div");
+        chip.className = "chip";
+        chip.textContent = chord.name;
+        chip.title = `${chord.name} (${chord.notes})`;
+        chip.draggable = true;
+
+        chip.addEventListener("dragstart", (e) => {
+          e.dataTransfer.setData("text/plain", key);
+          e.dataTransfer.effectAllowed = "copy";
+        });
+
+        chip.addEventListener("click", async () => {
+          await ensureAudioReady();
+          playChordTrigger(chord.midi);
+          if (selectedSlot) {
+            assignChordToSlot(selectedSlot.side, selectedSlot.index, key);
+          }
+        });
+
+        counts[chord.zone]++;
+        if (chord.zone === "basic") zoneBasic.appendChild(chip);
+        else if (chord.zone === "add") zoneAdd.appendChild(chip);
+        else if (chord.zone === "seventh") zoneSeventh.appendChild(chip);
+        else zoneExtended.appendChild(chip);
+      });
+
+      document.getElementById("countBasic").textContent = `${counts.basic} คอร์ด`;
+      document.getElementById("countAdd").textContent = `${counts.add} คอร์ด`;
+      document.getElementById("countSeventh").textContent = `${counts.seventh} คอร์ด`;
+      document.getElementById("countExtended").textContent = `${counts.extended} คอร์ด`;
+    }
+
+    // =========================================================================
+    // ระบบเสียง Web Audio API (คาแรคเตอร์เสียง + Sustain 0-100% แม่นยำ)
+    // =========================================================================
+    function getSustainSettings() {
+      const val = Number(sustainSlider.value);
+      const norm = val / 100;
+
+      const isZero = norm <= 0.005;
+      const decayMult = isZero ? 0.06 : (0.06 + 5.44 * Math.pow(norm, 2.45));
+      const holdLevel = isZero ? 0.0001 : Math.max(0.02, norm);
+      const releaseSec = isZero ? 0.025 : (0.025 + (0.22 * norm + 0.78 * norm * norm) * 8.475);
+
+      return {
+        norm,
+        isZero,
+        decayMult,
+        holdLevel,
+        releaseSec
+      };
+    }
+
+    function createReverbImpulse(ctx, duration = 2.2, decay = 2.6) {
+      const rate = ctx.sampleRate;
+      const length = rate * duration;
+      const impulse = ctx.createBuffer(2, length, rate);
+      for (let ch = 0; ch < 2; ch++) {
+        const data = impulse.getChannelData(ch);
+        for (let i = 0; i < length; i++) {
+          const env = Math.pow(1 - i / length, decay);
+          data[i] = (Math.random() * 2 - 1) * env;
+        }
+      }
+      return impulse;
+    }
+
+    async function ensureAudioReady() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        synthBus = audioCtx.createGain();
+        synthBus.gain.value = 0.85;
+
+        masterFilter = audioCtx.createBiquadFilter();
+        masterFilter.type = "lowpass";
+        masterFilter.frequency.value = 2600;
+        masterFilter.Q.value = 1.2;
+
+        const compressor = audioCtx.createDynamicsCompressor();
+        compressor.threshold.value = -16;
+        compressor.knee.value = 12;
+        compressor.ratio.value = 4;
+        compressor.attack.value = 0.01;
+        compressor.release.value = 0.2;
+
+        analyserNode = audioCtx.createAnalyser();
+        analyserNode.fftSize = 256;
+        analyserNode.smoothingTimeConstant = 0.86;
+        waveTimeData = new Uint8Array(analyserNode.frequencyBinCount);
+        waveFreqData = new Uint8Array(analyserNode.frequencyBinCount);
+
+        const convolver = audioCtx.createConvolver();
+        convolver.buffer = createReverbImpulse(audioCtx, 2.2, 2.6);
+        reverbGain = audioCtx.createGain();
+        reverbGain.gain.value = reverbSlider.value / 100;
+
+        const delayNode = audioCtx.createDelay(1.0);
+        delayNode.delayTime.value = 0.35;
+        const feedbackGain = audioCtx.createGain();
+        feedbackGain.gain.value = 0.35;
+        const delayToneFilter = audioCtx.createBiquadFilter();
+        delayToneFilter.type = "lowpass";
+        delayToneFilter.frequency.value = 1600;
+
+        delayGain = audioCtx.createGain();
+        delayGain.gain.value = (delaySlider.value / 100) * 0.6;
+
+        synthBus.connect(masterFilter);
+        masterFilter.connect(compressor);
+
+        masterFilter.connect(convolver);
+        convolver.connect(reverbGain);
+        reverbGain.connect(compressor);
+
+        masterFilter.connect(delayNode);
+        delayNode.connect(delayToneFilter);
+        delayToneFilter.connect(feedbackGain);
+        feedbackGain.connect(delayNode);
+        delayToneFilter.connect(delayGain);
+        delayGain.connect(compressor);
+        delayGain.connect(convolver);
+
+        compressor.connect(analyserNode);
+        compressor.connect(audioCtx.destination);
+      }
+      if (audioCtx.state === "suspended") {
+        await audioCtx.resume();
+      }
+    }
+
+    function createSynthVoice(baseFreq, isSustain = false, volumeScale = 1.0, initialSemis = 0) {
+      if (!audioCtx) return null;
+      const now = audioCtx.currentTime;
+      const preset = presetSelect.value;
+      const sus = getSustainSettings();
+      const initRatio = Math.pow(2, initialSemis / 12);
+      const freq = baseFreq * initRatio;
+
+      const voiceGain = audioCtx.createGain();
+      voiceGain.connect(synthBus);
+      const trackedOscs = [];
+      const extraStopOscs = [];
+      let cleanupTimer = null;
+      let voiceController = null;
+
+      const scheduleNodeCleanup = (stopAtTime) => {
+        if (cleanupTimer) clearTimeout(cleanupTimer);
+        const delayMs = Math.max(80, (stopAtTime - audioCtx.currentTime) * 1000 + 80);
+        cleanupTimer = setTimeout(() => {
+          if (voiceController) activeLingeringVoices.delete(voiceController);
+          try { voiceGain.disconnect(); } catch (_) {}
+          trackedOscs.forEach(({ osc }) => { try { osc.disconnect(); } catch (_) {} });
+          extraStopOscs.forEach(osc => { try { osc.disconnect(); } catch (_) {} });
+        }, delayMs);
+      };
+
+      const registerOsc = (osc, mult = 1.0) => {
+        trackedOscs.push({ osc, mult });
+      };
+
+      const attachDetuneVibrato = (oscList, rateHz = 5.0, depthCents = 10, delaySec = 0.16) => {
+        const lfo = audioCtx.createOscillator();
+        const lfoGain = audioCtx.createGain();
+        lfo.type = "sine";
+        lfo.frequency.setValueAtTime(rateHz, now);
+        lfoGain.gain.setValueAtTime(0.001, now);
+        lfoGain.gain.linearRampToValueAtTime(depthCents, now + delaySec);
+        lfo.connect(lfoGain);
+        oscList.forEach(o => lfoGain.connect(o.detune));
+        lfo.start(now);
+        extraStopOscs.push(lfo);
+      };
+
+      const attachTremolo = (targetGainNode, rateHz = 5.2, depth = 0.25) => {
+        const lfo = audioCtx.createOscillator();
+        const lfoGain = audioCtx.createGain();
+        lfo.type = "sine";
+        lfo.frequency.setValueAtTime(rateHz, now);
+        lfoGain.gain.setValueAtTime(depth, now);
+        lfo.connect(lfoGain);
+        lfoGain.connect(targetGainNode.gain);
+        lfo.start(now);
+        extraStopOscs.push(lfo);
+      };
+
+      const applyVoiceEnvelope = ({
+        peak,
+        attack = 0.012,
+        isPercussive = true,
+        sustainDur = 4.2,
+        triggerDur = 1.45
+      }) => {
+        const safePeak = Math.max(0.0002, peak);
+        voiceGain.gain.setValueAtTime(0.0001, now);
+
+        if (sus.isZero) {
+          const fastAtk = Math.min(attack, 0.014);
+          const dryDur = 0.17;
+          voiceGain.gain.linearRampToValueAtTime(safePeak, now + fastAtk);
+          voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + dryDur);
+          const stopAt = now + dryDur + 0.04;
+          trackedOscs.forEach(({ osc }) => osc.stop(stopAt));
+          extraStopOscs.forEach(osc => osc.stop(stopAt));
+          scheduleNodeCleanup(stopAt);
+          return;
+        }
+
+        voiceGain.gain.linearRampToValueAtTime(safePeak, now + attack);
+
+        if (!isSustain) {
+          const dur = Math.max(0.18, triggerDur * sus.decayMult);
+          voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + attack + dur);
+          const stopAt = now + attack + dur + 0.05;
+          trackedOscs.forEach(({ osc }) => osc.stop(stopAt));
+          extraStopOscs.forEach(osc => osc.stop(stopAt));
+          scheduleNodeCleanup(stopAt);
+          return;
+        }
+
+        if (sus.norm >= 0.98) {
+          if (isPercussive) {
+            voiceGain.gain.setTargetAtTime(safePeak * 0.44, now + attack + 0.06, 1.5);
+          }
+          return;
+        }
+
+        if (isPercussive) {
+          const dur = Math.max(0.22, sustainDur * sus.decayMult);
+          voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + attack + dur);
+          const stopAt = now + attack + dur + 0.05;
+          trackedOscs.forEach(({ osc }) => osc.stop(stopAt));
+          extraStopOscs.forEach(osc => osc.stop(stopAt));
+          scheduleNodeCleanup(stopAt);
+        } else {
+          const holdTarget = Math.max(0.0002, safePeak * sus.holdLevel);
+          const fadeDur = Math.max(0.45, 4.5 * sus.decayMult);
+          voiceGain.gain.exponentialRampToValueAtTime(holdTarget, now + attack + 0.45);
+          voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + attack + 0.45 + fadeDur);
+          const stopAt = now + attack + 0.45 + fadeDur + 0.05;
+          trackedOscs.forEach(({ osc }) => osc.stop(stopAt));
+          extraStopOscs.forEach(osc => osc.stop(stopAt));
+          scheduleNodeCleanup(stopAt);
+        }
+      };
+
+      if (preset === "grand_piano") {
+        const pianoFilter = audioCtx.createBiquadFilter();
+        pianoFilter.type = "lowpass";
+        pianoFilter.frequency.setValueAtTime(Math.min(freq * 9, 6800), now);
+        pianoFilter.frequency.exponentialRampToValueAtTime(Math.max(freq * 2.2, 420), now + Math.max(0.15, 1.1 * sus.decayMult));
+        pianoFilter.connect(voiceGain);
+
+        const partials = [
+          { ratio: 1.0,    type: "triangle", gain: 0.62, decay: 4.5 },
+          { ratio: 1.0008, type: "sine",     gain: 0.45, decay: 4.2 },
+          { ratio: 2.0,    type: "sine",     gain: 0.28, decay: 2.2 },
+          { ratio: 3.0,    type: "sine",     gain: 0.12, decay: 1.1 },
+          { ratio: 4.0,    type: "sine",     gain: 0.06, decay: 0.35 }
+        ];
+
+        partials.forEach(p => {
+          const osc = audioCtx.createOscillator();
+          const pGain = audioCtx.createGain();
+          osc.type = p.type;
+          osc.frequency.setValueAtTime(freq * p.ratio, now);
+          pGain.gain.setValueAtTime(p.gain, now);
+          if (sus.norm < 0.98) {
+            pGain.gain.exponentialRampToValueAtTime(0.0001, now + Math.max(0.14, p.decay * sus.decayMult));
+          } else {
+            pGain.gain.setTargetAtTime(p.gain * 0.35, now + 0.1, 1.6);
+          }
+          osc.connect(pGain);
+          pGain.connect(pianoFilter);
+          osc.start(now);
+          registerOsc(osc, p.ratio);
+        });
+
+        applyVoiceEnvelope({ peak: 0.14 * volumeScale, attack: 0.008, isPercussive: true, sustainDur: 4.4, triggerDur: 1.55 });
+
+      } else if (preset === "upright_piano") {
+        const uprightFilter = audioCtx.createBiquadFilter();
+        uprightFilter.type = "lowpass";
+        uprightFilter.frequency.setValueAtTime(Math.min(freq * 11, 7500), now);
+        uprightFilter.frequency.exponentialRampToValueAtTime(Math.max(freq * 2.8, 520), now + Math.max(0.15, 0.85 * sus.decayMult));
+        uprightFilter.connect(voiceGain);
+
+        const partials = [
+          { ratio: 0.9988, type: "triangle", gain: 0.55, decay: 3.4 },
+          { ratio: 1.0015, type: "triangle", gain: 0.45, decay: 3.2 },
+          { ratio: 2.0,    type: "sine",     gain: 0.34, decay: 1.8 },
+          { ratio: 3.0,    type: "sine",     gain: 0.16, decay: 0.9 }
+        ];
+
+        partials.forEach(p => {
+          const osc = audioCtx.createOscillator();
+          const pGain = audioCtx.createGain();
+          osc.type = p.type;
+          osc.frequency.setValueAtTime(freq * p.ratio, now);
+          pGain.gain.setValueAtTime(p.gain, now);
+          if (sus.norm < 0.98) {
+            pGain.gain.exponentialRampToValueAtTime(0.0001, now + Math.max(0.14, p.decay * sus.decayMult));
+          } else {
+            pGain.gain.setTargetAtTime(p.gain * 0.35, now + 0.1, 1.5);
+          }
+          osc.connect(pGain);
+          pGain.connect(uprightFilter);
+          osc.start(now);
+          registerOsc(osc, p.ratio);
+        });
+
+        applyVoiceEnvelope({ peak: 0.13 * volumeScale, attack: 0.007, isPercussive: true, sustainDur: 3.5, triggerDur: 1.35 });
+
+      } else if (preset === "felt_piano") {
+        const feltFilter = audioCtx.createBiquadFilter();
+        feltFilter.type = "lowpass";
+        feltFilter.Q.value = 0.8;
+        feltFilter.frequency.setValueAtTime(Math.min(freq * 3.4, 1400), now);
+        feltFilter.frequency.exponentialRampToValueAtTime(Math.max(freq * 1.4, 260), now + Math.max(0.15, 1.4 * sus.decayMult));
+        feltFilter.connect(voiceGain);
+
+        const layers = [
+          { ratio: 1.0,    type: "sine",     gain: 0.68, decay: 4.8 },
+          { ratio: 0.9993, type: "triangle", gain: 0.32, decay: 4.0 },
+          { ratio: 0.5,    type: "sine",     gain: 0.22, decay: 3.5 },
+          { ratio: 2.0,    type: "sine",     gain: 0.09, decay: 1.2 }
+        ];
+
+        layers.forEach(p => {
+          const osc = audioCtx.createOscillator();
+          const pGain = audioCtx.createGain();
+          osc.type = p.type;
+          osc.frequency.setValueAtTime(freq * p.ratio, now);
+          pGain.gain.setValueAtTime(p.gain, now);
+          if (sus.norm < 0.98) {
+            pGain.gain.exponentialRampToValueAtTime(0.0001, now + Math.max(0.14, p.decay * sus.decayMult));
+          } else {
+            pGain.gain.setTargetAtTime(p.gain * 0.38, now + 0.1, 1.7);
+          }
+          osc.connect(pGain);
+          pGain.connect(feltFilter);
+          osc.start(now);
+          registerOsc(osc, p.ratio);
+        });
+
+        applyVoiceEnvelope({ peak: 0.16 * volumeScale, attack: 0.024, isPercussive: true, sustainDur: 4.6, triggerDur: 1.7 });
+
+      } else if (preset === "dx_piano") {
+        const body = audioCtx.createOscillator();
+        const body2 = audioCtx.createOscillator();
+        const chime = audioCtx.createOscillator();
+        const chimeGain = audioCtx.createGain();
+        const sparkle = audioCtx.createOscillator();
+        const sparkleGain = audioCtx.createGain();
+
+        body.type = "sine";
+        body.frequency.setValueAtTime(freq, now);
+        body2.type = "triangle";
+        body2.frequency.setValueAtTime(freq * 2.001, now);
+
+        chime.type = "sine";
+        chime.frequency.setValueAtTime(freq * 7, now);
+        chimeGain.gain.setValueAtTime(0.055 * volumeScale, now);
+        chimeGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.24);
+
+        sparkle.type = "sine";
+        sparkle.frequency.setValueAtTime(freq * 14, now);
+        sparkleGain.gain.setValueAtTime(0.025 * volumeScale, now);
+        sparkleGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+
+        const body2Gain = audioCtx.createGain();
+        body2Gain.gain.setValueAtTime(0.28, now);
+        body2Gain.gain.exponentialRampToValueAtTime(0.05, now + Math.max(0.15, 1.2 * sus.decayMult));
+
+        body.connect(voiceGain);
+        body2.connect(body2Gain);
+        body2Gain.connect(voiceGain);
+        chime.connect(chimeGain);
+        chimeGain.connect(voiceGain);
+        sparkle.connect(sparkleGain);
+        sparkleGain.connect(voiceGain);
+
+        body.start(now);    registerOsc(body, 1.0);
+        body2.start(now);   registerOsc(body2, 2.001);
+        chime.start(now);   registerOsc(chime, 7.0);
+        sparkle.start(now); registerOsc(sparkle, 14.0);
+
+        applyVoiceEnvelope({ peak: 0.11 * volumeScale, attack: 0.01, isPercussive: false, sustainDur: 3.5, triggerDur: 1.4 });
+
+      } else if (preset === "wurlitzer") {
+        const wurliFilter = audioCtx.createBiquadFilter();
+        wurliFilter.type = "bandpass";
+        wurliFilter.frequency.setValueAtTime(Math.min(freq * 2.5, 2200), now);
+        wurliFilter.Q.value = 0.7;
+
+        const tremoloBus = audioCtx.createGain();
+        tremoloBus.gain.setValueAtTime(0.85, now);
+        attachTremolo(tremoloBus, 5.2, 0.18);
+
+        wurliFilter.connect(tremoloBus);
+        tremoloBus.connect(voiceGain);
+
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const reed = audioCtx.createOscillator();
+        const reedGain = audioCtx.createGain();
+
+        osc1.type = "triangle";
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.type = "sine";
+        osc2.frequency.setValueAtTime(freq * 1.0015, now);
+        reed.type = "square";
+        reed.frequency.setValueAtTime(freq * 3.0, now);
+        reedGain.gain.setValueAtTime(0.08, now);
+        reedGain.gain.exponentialRampToValueAtTime(0.004, now + 0.35);
+
+        osc1.connect(wurliFilter);
+        osc2.connect(wurliFilter);
+        reed.connect(reedGain);
+        reedGain.connect(wurliFilter);
+
+        osc1.start(now); registerOsc(osc1, 1.0);
+        osc2.start(now); registerOsc(osc2, 1.0015);
+        reed.start(now); registerOsc(reed, 3.0);
+
+        applyVoiceEnvelope({ peak: 0.15 * volumeScale, attack: 0.012, isPercussive: false, sustainDur: 3.4, triggerDur: 1.25 });
+
+      } else if (preset === "clavinet") {
+        const clavFilter = audioCtx.createBiquadFilter();
+        clavFilter.type = "lowpass";
+        clavFilter.Q.value = 3.4;
+        clavFilter.frequency.setValueAtTime(3800, now);
+        clavFilter.frequency.exponentialRampToValueAtTime(750, now + Math.max(0.12, 0.35 * sus.decayMult));
+        clavFilter.connect(voiceGain);
+
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const osc2Gain = audioCtx.createGain();
+
+        osc1.type = "sawtooth";
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.type = "square";
+        osc2.frequency.setValueAtTime(freq * 2.0, now);
+        osc2Gain.gain.setValueAtTime(0.35, now);
+
+        osc1.connect(clavFilter);
+        osc2.connect(osc2Gain);
+        osc2Gain.connect(clavFilter);
+
+        osc1.start(now); registerOsc(osc1, 1.0);
+        osc2.start(now); registerOsc(osc2, 2.0);
+
+        applyVoiceEnvelope({ peak: 0.105 * volumeScale, attack: 0.004, isPercussive: true, sustainDur: 1.8, triggerDur: 0.75 });
+
+      } else if (preset === "harpsichord") {
+        const hpFilter = audioCtx.createBiquadFilter();
+        hpFilter.type = "highpass";
+        hpFilter.frequency.setValueAtTime(280, now);
+        hpFilter.connect(voiceGain);
+
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const osc2Gain = audioCtx.createGain();
+
+        osc1.type = "sawtooth";
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.type = "sawtooth";
+        osc2.frequency.setValueAtTime(freq * 2.0, now);
+        osc2Gain.gain.setValueAtTime(0.45, now);
+
+        osc1.connect(hpFilter);
+        osc2.connect(osc2Gain);
+        osc2Gain.connect(hpFilter);
+
+        osc1.start(now); registerOsc(osc1, 1.0);
+        osc2.start(now); registerOsc(osc2, 2.0);
+
+        applyVoiceEnvelope({ peak: 0.095 * volumeScale, attack: 0.004, isPercussive: true, sustainDur: 2.1, triggerDur: 0.95 });
+
+      } else if (preset === "warm_synth") {
+        const warmFilter = audioCtx.createBiquadFilter();
+        warmFilter.type = "lowpass";
+        warmFilter.Q.value = 1.4;
+        warmFilter.frequency.setValueAtTime(720, now);
+        warmFilter.frequency.linearRampToValueAtTime(1450, now + 0.35);
+        warmFilter.connect(voiceGain);
+
+        const layers = [
+          { ratio: 0.994, type: "sawtooth", gain: 0.34 },
+          { ratio: 1.0,   type: "triangle", gain: 0.52 },
+          { ratio: 1.006, type: "sawtooth", gain: 0.34 },
+          { ratio: 0.5,   type: "sine",     gain: 0.36 }
+        ];
+
+        layers.forEach(l => {
+          const osc = audioCtx.createOscillator();
+          const lGain = audioCtx.createGain();
+          osc.type = l.type;
+          osc.frequency.setValueAtTime(freq * l.ratio, now);
+          lGain.gain.value = l.gain;
+          osc.connect(lGain);
+          lGain.connect(warmFilter);
+          osc.start(now);
+          registerOsc(osc, l.ratio);
+        });
+
+        applyVoiceEnvelope({ peak: 0.095 * volumeScale, attack: isSustain ? 0.11 : 0.04, isPercussive: false, triggerDur: 1.35 });
+
+      } else if (preset === "retro_synth") {
+        const retroFilter = audioCtx.createBiquadFilter();
+        retroFilter.type = "lowpass";
+        retroFilter.Q.value = 3.2;
+        retroFilter.frequency.setValueAtTime(360, now);
+        retroFilter.frequency.exponentialRampToValueAtTime(2900, now + 0.14);
+        retroFilter.frequency.exponentialRampToValueAtTime(1150, now + 0.85);
+        retroFilter.connect(voiceGain);
+
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const oscSub = audioCtx.createOscillator();
+        const subGain = audioCtx.createGain();
+
+        osc1.type = "sawtooth";
+        osc1.frequency.setValueAtTime(freq * 0.993, now);
+        osc2.type = "square";
+        osc2.frequency.setValueAtTime(freq * 1.007, now);
+        oscSub.type = "sawtooth";
+        oscSub.frequency.setValueAtTime(freq * 0.5, now);
+        subGain.gain.value = 0.35;
+
+        osc1.connect(retroFilter);
+        osc2.connect(retroFilter);
+        oscSub.connect(subGain);
+        subGain.connect(retroFilter);
+
+        osc1.start(now);   registerOsc(osc1, 0.993);
+        osc2.start(now);   registerOsc(osc2, 1.007);
+        oscSub.start(now); registerOsc(oscSub, 0.5);
+
+        applyVoiceEnvelope({ peak: 0.088 * volumeScale, attack: 0.02, isPercussive: false, triggerDur: 1.3 });
+
+      } else if (preset === "analog_poly") {
+        const polyFilter = audioCtx.createBiquadFilter();
+        polyFilter.type = "lowpass";
+        polyFilter.Q.value = 1.8;
+        polyFilter.frequency.setValueAtTime(2100, now);
+        polyFilter.connect(voiceGain);
+
+        [0.995, 1.005].forEach(ratio => {
+          const osc = audioCtx.createOscillator();
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(freq * ratio, now);
+          osc.connect(polyFilter);
+          osc.start(now);
+          registerOsc(osc, ratio);
+        });
+
+        applyVoiceEnvelope({ peak: 0.085 * volumeScale, attack: 0.03, isPercussive: false, triggerDur: 1.25 });
+
+      } else if (preset === "glass_pad") {
+        const partials = [
+          { ratio: 1.0,  gain: 0.55 },
+          { ratio: 2.0,  gain: 0.30 },
+          { ratio: 3.01, gain: 0.14 },
+          { ratio: 4.02, gain: 0.07 }
+        ];
+
+        partials.forEach(p => {
+          const osc = audioCtx.createOscillator();
+          const pGain = audioCtx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq * p.ratio, now);
+          pGain.gain.value = p.gain;
+          osc.connect(pGain);
+          pGain.connect(voiceGain);
+          osc.start(now);
+          registerOsc(osc, p.ratio);
+        });
+
+        applyVoiceEnvelope({ peak: 0.095 * volumeScale, attack: isSustain ? 0.28 : 0.09, isPercussive: false, triggerDur: 1.6 });
+
+      } else if (preset === "dream_pluck") {
+        const pluckFilter = audioCtx.createBiquadFilter();
+        pluckFilter.type = "lowpass";
+        pluckFilter.Q.value = 2.8;
+        pluckFilter.frequency.setValueAtTime(3600, now);
+        pluckFilter.frequency.exponentialRampToValueAtTime(420, now + Math.max(0.12, 0.28 * sus.decayMult));
+        pluckFilter.connect(voiceGain);
+
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const osc3 = audioCtx.createOscillator();
+        const osc3Gain = audioCtx.createGain();
+
+        osc1.type = "triangle";
+        osc1.frequency.setValueAtTime(freq * 0.997, now);
+        osc2.type = "sawtooth";
+        osc2.frequency.setValueAtTime(freq * 1.003, now);
+        osc3.type = "sine";
+        osc3.frequency.setValueAtTime(freq * 2.0, now);
+        osc3Gain.gain.value = 0.28;
+
+        osc1.connect(pluckFilter);
+        osc2.connect(pluckFilter);
+        osc3.connect(osc3Gain);
+        osc3Gain.connect(pluckFilter);
+
+        osc1.start(now); registerOsc(osc1, 0.997);
+        osc2.start(now); registerOsc(osc2, 1.003);
+        osc3.start(now); registerOsc(osc3, 2.0);
+
+        applyVoiceEnvelope({ peak: 0.13 * volumeScale, attack: 0.008, isPercussive: true, sustainDur: 2.4, triggerDur: 1.1 });
+
+      } else if (preset === "cyber_lead") {
+        const leadFilter = audioCtx.createBiquadFilter();
+        leadFilter.type = "lowpass";
+        leadFilter.Q.value = 2.4;
+        leadFilter.frequency.setValueAtTime(2400, now);
+        leadFilter.connect(voiceGain);
+
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        osc1.type = "square";
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.type = "triangle";
+        osc2.frequency.setValueAtTime(freq * 1.001, now);
+
+        attachDetuneVibrato([osc1, osc2], 5.6, 14, 0.18);
+
+        osc1.connect(leadFilter);
+        osc2.connect(leadFilter);
+        osc1.start(now); registerOsc(osc1, 1.0);
+        osc2.start(now); registerOsc(osc2, 1.001);
+
+        applyVoiceEnvelope({ peak: 0.082 * volumeScale, attack: 0.025, isPercussive: false, triggerDur: 1.2 });
+
+      } else if (preset === "sub_pad") {
+        const subFilter = audioCtx.createBiquadFilter();
+        subFilter.type = "lowpass";
+        subFilter.frequency.setValueAtTime(540, now);
+        subFilter.connect(voiceGain);
+
+        const oscSub = audioCtx.createOscillator();
+        const oscMid = audioCtx.createOscillator();
+        oscSub.type = "sine";
+        oscSub.frequency.setValueAtTime(freq * 0.5, now);
+        oscMid.type = "triangle";
+        oscMid.frequency.setValueAtTime(freq, now);
+
+        oscSub.connect(subFilter);
+        oscMid.connect(subFilter);
+        oscSub.start(now); registerOsc(oscSub, 0.5);
+        oscMid.start(now); registerOsc(oscMid, 1.0);
+
+        applyVoiceEnvelope({ peak: 0.14 * volumeScale, attack: isSustain ? 0.24 : 0.08, isPercussive: false, triggerDur: 1.45 });
+
+      } else if (preset === "aurora_pad") {
+        const aurFilter = audioCtx.createBiquadFilter();
+        aurFilter.type = "lowpass";
+        aurFilter.frequency.setValueAtTime(2600, now);
+        aurFilter.connect(voiceGain);
+
+        const ratios = [1.0, 1.996, 2.004, 3.0];
+        const oscRefs = [];
+        ratios.forEach((r, idx) => {
+          const osc = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          osc.type = idx === 0 ? "triangle" : "sine";
+          osc.frequency.setValueAtTime(freq * r, now);
+          g.gain.value = idx === 0 ? 0.45 : 0.22;
+          osc.connect(g);
+          g.connect(aurFilter);
+          osc.start(now);
+          registerOsc(osc, r);
+          oscRefs.push(osc);
+        });
+
+        attachDetuneVibrato(oscRefs, 3.8, 12, 0.25);
+
+        applyVoiceEnvelope({ peak: 0.095 * volumeScale, attack: isSustain ? 0.34 : 0.1, isPercussive: false, triggerDur: 1.65 });
+
+      } else if (preset === "dreamy_string") {
+        const dreamFilter = audioCtx.createBiquadFilter();
+        dreamFilter.type = "lowpass";
+        dreamFilter.Q.value = 1.1;
+        dreamFilter.frequency.setValueAtTime(1750, now);
+        dreamFilter.connect(voiceGain);
+
+        const ensemble = [
+          { ratio: 0.992, type: "sawtooth", gain: 0.28 },
+          { ratio: 0.997, type: "triangle", gain: 0.35 },
+          { ratio: 1.003, type: "triangle", gain: 0.35 },
+          { ratio: 1.008, type: "sawtooth", gain: 0.28 },
+          { ratio: 2.0,   type: "sine",     gain: 0.22 }
+        ];
+
+        const oscRefs = [];
+        ensemble.forEach(e => {
+          const osc = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          osc.type = e.type;
+          osc.frequency.setValueAtTime(freq * e.ratio, now);
+          g.gain.value = e.gain;
+          osc.connect(g);
+          g.connect(dreamFilter);
+          osc.start(now);
+          registerOsc(osc, e.ratio);
+          oscRefs.push(osc);
+        });
+
+        attachDetuneVibrato(oscRefs, 4.4, 11, 0.28);
+
+        applyVoiceEnvelope({ peak: 0.075 * volumeScale, attack: isSustain ? 0.34 : 0.11, isPercussive: false, triggerDur: 1.65 });
+
+      } else if (preset === "strings") {
+        const strFilter = audioCtx.createBiquadFilter();
+        strFilter.type = "lowpass";
+        strFilter.frequency.setValueAtTime(1450, now);
+        strFilter.connect(voiceGain);
+
+        [0.994, 1.0, 1.006].forEach(detuneRatio => {
+          const osc = audioCtx.createOscillator();
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(freq * detuneRatio, now);
+          osc.connect(strFilter);
+          osc.start(now);
+          registerOsc(osc, detuneRatio);
+        });
+
+        applyVoiceEnvelope({ peak: 0.065 * volumeScale, attack: isSustain ? 0.24 : 0.07, isPercussive: false, triggerDur: 1.4 });
+
+      } else if (preset === "cello_ensemble") {
+        const celloFilter = audioCtx.createBiquadFilter();
+        celloFilter.type = "lowpass";
+        celloFilter.Q.value = 1.5;
+        celloFilter.frequency.setValueAtTime(980, now);
+        celloFilter.connect(voiceGain);
+
+        const cellos = [
+          { ratio: 0.498, gain: 0.42 },
+          { ratio: 0.502, gain: 0.42 },
+          { ratio: 0.997, gain: 0.32 },
+          { ratio: 1.003, gain: 0.32 }
+        ];
+
+        cellos.forEach(c => {
+          const osc = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(freq * c.ratio, now);
+          g.gain.value = c.gain;
+          osc.connect(g);
+          g.connect(celloFilter);
+          osc.start(now);
+          registerOsc(osc, c.ratio);
+        });
+
+        applyVoiceEnvelope({ peak: 0.075 * volumeScale, attack: isSustain ? 0.26 : 0.08, isPercussive: false, triggerDur: 1.45 });
+
+      } else if (preset === "pizzicato") {
+        const pizzFilter = audioCtx.createBiquadFilter();
+        pizzFilter.type = "lowpass";
+        pizzFilter.frequency.setValueAtTime(2200, now);
+        pizzFilter.frequency.exponentialRampToValueAtTime(480, now + Math.max(0.1, 0.24 * sus.decayMult));
+        pizzFilter.connect(voiceGain);
+
+        [0.996, 1.004].forEach(r => {
+          const osc = audioCtx.createOscillator();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(freq * r, now);
+          osc.connect(pizzFilter);
+          osc.start(now);
+          registerOsc(osc, r);
+        });
+
+        applyVoiceEnvelope({ peak: 0.15 * volumeScale, attack: 0.006, isPercussive: true, sustainDur: 0.85, triggerDur: 0.45 });
+
+      } else if (preset === "harp") {
+        const harpFilter = audioCtx.createBiquadFilter();
+        harpFilter.type = "lowpass";
+        harpFilter.frequency.setValueAtTime(3200, now);
+        harpFilter.frequency.exponentialRampToValueAtTime(650, now + Math.max(0.14, 0.9 * sus.decayMult));
+        harpFilter.connect(voiceGain);
+
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const osc2Gain = audioCtx.createGain();
+        osc1.type = "triangle";
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.type = "sine";
+        osc2.frequency.setValueAtTime(freq * 2.0, now);
+        osc2Gain.gain.setValueAtTime(0.32, now);
+        osc2Gain.gain.exponentialRampToValueAtTime(0.02, now + Math.max(0.14, 0.7 * sus.decayMult));
+
+        osc1.connect(harpFilter);
+        osc2.connect(osc2Gain);
+        osc2Gain.connect(harpFilter);
+
+        osc1.start(now); registerOsc(osc1, 1.0);
+        osc2.start(now); registerOsc(osc2, 2.0);
+
+        applyVoiceEnvelope({ peak: 0.145 * volumeScale, attack: 0.009, isPercussive: true, sustainDur: 3.4, triggerDur: 1.5 });
+
+      } else if (preset === "choir_pad") {
+        const formant1 = audioCtx.createBiquadFilter();
+        formant1.type = "bandpass";
+        formant1.frequency.setValueAtTime(720, now);
+        formant1.Q.value = 3.2;
+
+        const formant2 = audioCtx.createBiquadFilter();
+        formant2.type = "bandpass";
+        formant2.frequency.setValueAtTime(1260, now);
+        formant2.Q.value = 3.8;
+
+        const f2Gain = audioCtx.createGain();
+        f2Gain.gain.value = 0.7;
+
+        formant1.connect(voiceGain);
+        formant2.connect(f2Gain);
+        f2Gain.connect(voiceGain);
+
+        const oscRefs = [];
+        [0.995, 1.0, 1.005].forEach(r => {
+          const osc = audioCtx.createOscillator();
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(freq * r, now);
+          osc.connect(formant1);
+          osc.connect(formant2);
+          osc.start(now);
+          registerOsc(osc, r);
+          oscRefs.push(osc);
+        });
+
+        attachDetuneVibrato(oscRefs, 4.8, 12, 0.25);
+
+        applyVoiceEnvelope({ peak: 0.17 * volumeScale, attack: isSustain ? 0.32 : 0.1, isPercussive: false, triggerDur: 1.55 });
+
+      } else if (preset === "horn") {
+        const hornFilter = audioCtx.createBiquadFilter();
+        hornFilter.type = "lowpass";
+        hornFilter.Q.value = 2.0;
+        hornFilter.frequency.setValueAtTime(290, now);
+        hornFilter.frequency.exponentialRampToValueAtTime(1750, now + 0.13);
+        hornFilter.frequency.setTargetAtTime(1320, now + 0.15, 0.2);
+        hornFilter.connect(voiceGain);
+
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const oscSub = audioCtx.createOscillator();
+        const subGain = audioCtx.createGain();
+
+        osc1.type = "sawtooth";
+        osc1.frequency.setValueAtTime(freq * 0.998, now);
+        osc2.type = "triangle";
+        osc2.frequency.setValueAtTime(freq * 1.002, now);
+        oscSub.type = "sine";
+        oscSub.frequency.setValueAtTime(freq * 0.5, now);
+        subGain.gain.value = 0.28;
+
+        osc1.connect(hornFilter);
+        osc2.connect(hornFilter);
+        oscSub.connect(subGain);
+        subGain.connect(hornFilter);
+
+        osc1.start(now);   registerOsc(osc1, 0.998);
+        osc2.start(now);   registerOsc(osc2, 1.002);
+        oscSub.start(now); registerOsc(oscSub, 0.5);
+
+        applyVoiceEnvelope({ peak: 0.11 * volumeScale, attack: isSustain ? 0.085 : 0.04, isPercussive: false, triggerDur: 1.3 });
+
+      } else if (preset === "brass_section") {
+        const brassFilter = audioCtx.createBiquadFilter();
+        brassFilter.type = "lowpass";
+        brassFilter.Q.value = 2.3;
+        brassFilter.frequency.setValueAtTime(420, now);
+        brassFilter.frequency.exponentialRampToValueAtTime(3200, now + 0.11);
+        brassFilter.frequency.setTargetAtTime(2200, now + 0.14, 0.18);
+        brassFilter.connect(voiceGain);
+
+        [0.995, 1.0, 1.005].forEach(r => {
+          const osc = audioCtx.createOscillator();
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(freq * r, now);
+          osc.connect(brassFilter);
+          osc.start(now);
+          registerOsc(osc, r);
+        });
+
+        applyVoiceEnvelope({ peak: 0.082 * volumeScale, attack: 0.065, isPercussive: false, triggerDur: 1.25 });
+
+      } else if (preset === "muted_trumpet") {
+        const muteFilter = audioCtx.createBiquadFilter();
+        muteFilter.type = "bandpass";
+        muteFilter.frequency.setValueAtTime(1480, now);
+        muteFilter.Q.value = 3.8;
+        muteFilter.connect(voiceGain);
+
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        osc1.type = "sawtooth";
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.type = "square";
+        osc2.frequency.setValueAtTime(freq * 1.001, now);
+
+        attachDetuneVibrato([osc1, osc2], 5.4, 15, 0.2);
+
+        osc1.connect(muteFilter);
+        osc2.connect(muteFilter);
+        osc1.start(now); registerOsc(osc1, 1.0);
+        osc2.start(now); registerOsc(osc2, 1.001);
+
+        applyVoiceEnvelope({ peak: 0.16 * volumeScale, attack: 0.045, isPercussive: false, triggerDur: 1.2 });
+
+      } else if (preset === "flute") {
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const osc2Gain = audioCtx.createGain();
+
+        osc1.type = "sine";
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.type = "sine";
+        osc2.frequency.setValueAtTime(freq * 2.0, now);
+        osc2Gain.gain.value = 0.16;
+
+        attachDetuneVibrato([osc1, osc2], 5.0, 12, 0.22);
+
+        osc1.connect(voiceGain);
+        osc2.connect(osc2Gain);
+        osc2Gain.connect(voiceGain);
+
+        osc1.start(now); registerOsc(osc1, 1.0);
+        osc2.start(now); registerOsc(osc2, 2.0);
+
+        applyVoiceEnvelope({ peak: 0.12 * volumeScale, attack: isSustain ? 0.09 : 0.04, isPercussive: false, triggerDur: 1.2 });
+
+      } else if (preset === "pan_flute") {
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const chiff = audioCtx.createOscillator();
+        const chiffGain = audioCtx.createGain();
+
+        osc1.type = "triangle";
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.type = "sine";
+        osc2.frequency.setValueAtTime(freq * 2.0, now);
+        const osc2Gain = audioCtx.createGain();
+        osc2Gain.gain.value = 0.22;
+
+        chiff.type = "sine";
+        chiff.frequency.setValueAtTime(freq * 3.0, now);
+        chiffGain.gain.setValueAtTime(0.06, now);
+        chiffGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+
+        attachDetuneVibrato([osc1, osc2], 4.6, 10, 0.24);
+
+        osc1.connect(voiceGain);
+        osc2.connect(osc2Gain);
+        osc2Gain.connect(voiceGain);
+        chiff.connect(chiffGain);
+        chiffGain.connect(voiceGain);
+
+        osc1.start(now);  registerOsc(osc1, 1.0);
+        osc2.start(now);  registerOsc(osc2, 2.0);
+        chiff.start(now); registerOsc(chiff, 3.0);
+
+        applyVoiceEnvelope({ peak: 0.115 * volumeScale, attack: 0.065, isPercussive: false, triggerDur: 1.2 });
+
+      } else if (preset === "nylon_guitar") {
+        const gFilter = audioCtx.createBiquadFilter();
+        gFilter.type = "lowpass";
+        gFilter.Q.value = 1.6;
+        gFilter.frequency.setValueAtTime(2600, now);
+        gFilter.frequency.exponentialRampToValueAtTime(580, now + Math.max(0.14, 0.45 * sus.decayMult));
+        gFilter.connect(voiceGain);
+
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const osc2Gain = audioCtx.createGain();
+
+        osc1.type = "triangle";
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.type = "sawtooth";
+        osc2.frequency.setValueAtTime(freq, now);
+        osc2Gain.gain.setValueAtTime(0.32, now);
+
+        osc1.connect(gFilter);
+        osc2.connect(osc2Gain);
+        osc2Gain.connect(gFilter);
+
+        osc1.start(now); registerOsc(osc1, 1.0);
+        osc2.start(now); registerOsc(osc2, 1.0);
+
+        applyVoiceEnvelope({ peak: 0.13 * volumeScale, attack: 0.012, isPercussive: true, sustainDur: 3.1, triggerDur: 1.35 });
+
+      } else if (preset === "vibraphone") {
+        const vibeBus = audioCtx.createGain();
+        vibeBus.gain.setValueAtTime(0.84, now);
+        attachTremolo(vibeBus, 5.8, 0.2);
+        vibeBus.connect(voiceGain);
+
+        const osc1 = audioCtx.createOscillator();
+        const ping = audioCtx.createOscillator();
+        const pingGain = audioCtx.createGain();
+
+        osc1.type = "sine";
+        osc1.frequency.setValueAtTime(freq, now);
+        ping.type = "sine";
+        ping.frequency.setValueAtTime(freq * 4.0, now);
+        pingGain.gain.setValueAtTime(0.045, now);
+        pingGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+
+        osc1.connect(vibeBus);
+        ping.connect(pingGain);
+        pingGain.connect(vibeBus);
+
+        osc1.start(now); registerOsc(osc1, 1.0);
+        ping.start(now); registerOsc(ping, 4.0);
+
+        applyVoiceEnvelope({ peak: 0.14 * volumeScale, attack: 0.008, isPercussive: true, sustainDur: 3.6, triggerDur: 1.55 });
+
+      } else if (preset === "marimba") {
+        const osc1 = audioCtx.createOscillator();
+        const woodBar = audioCtx.createOscillator();
+        const woodGain = audioCtx.createGain();
+
+        osc1.type = "sine";
+        osc1.frequency.setValueAtTime(freq, now);
+        woodBar.type = "sine";
+        woodBar.frequency.setValueAtTime(freq * 4.0, now);
+        woodGain.gain.setValueAtTime(0.14, now);
+        woodGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
+
+        osc1.connect(voiceGain);
+        woodBar.connect(woodGain);
+        woodGain.connect(voiceGain);
+
+        osc1.start(now);    registerOsc(osc1, 1.0);
+        woodBar.start(now); registerOsc(woodBar, 4.0);
+
+        applyVoiceEnvelope({ peak: 0.155 * volumeScale, attack: 0.005, isPercussive: true, sustainDur: 1.35, triggerDur: 0.75 });
+
+      } else if (preset === "jazz_organ") {
+        const drawbars = [
+          { ratio: 0.5, gain: 0.45 },
+          { ratio: 1.0, gain: 0.65 },
+          { ratio: 1.5, gain: 0.30 },
+          { ratio: 2.0, gain: 0.40 },
+          { ratio: 4.0, gain: 0.14 }
+        ];
+
+        drawbars.forEach(d => {
+          const osc = audioCtx.createOscillator();
+          const dGain = audioCtx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq * d.ratio, now);
+          dGain.gain.value = d.gain;
+          osc.connect(dGain);
+          dGain.connect(voiceGain);
+          osc.start(now);
+          registerOsc(osc, d.ratio);
+        });
+
+        const clickOsc = audioCtx.createOscillator();
+        const clickGain = audioCtx.createGain();
+        clickOsc.type = "triangle";
+        clickOsc.frequency.setValueAtTime(freq * 3, now);
+        clickGain.gain.setValueAtTime(0.18, now);
+        clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.025);
+        clickOsc.connect(clickGain);
+        clickGain.connect(voiceGain);
+        clickOsc.start(now);
+        registerOsc(clickOsc, 3.0);
+
+        applyVoiceEnvelope({ peak: 0.08 * volumeScale, attack: 0.015, isPercussive: false, triggerDur: 1.05 });
+
+      } else if (preset === "church_organ") {
+        const pipeFilter = audioCtx.createBiquadFilter();
+        pipeFilter.type = "lowpass";
+        pipeFilter.frequency.setValueAtTime(3400, now);
+        pipeFilter.connect(voiceGain);
+
+        const pipes = [
+          { ratio: 0.5, type: "sine",     gain: 0.45 },
+          { ratio: 1.0, type: "triangle", gain: 0.55 },
+          { ratio: 1.5, type: "sine",     gain: 0.25 },
+          { ratio: 2.0, type: "triangle", gain: 0.35 },
+          { ratio: 3.0, type: "sine",     gain: 0.14 },
+          { ratio: 4.0, type: "sine",     gain: 0.10 }
+        ];
+
+        pipes.forEach(p => {
+          const osc = audioCtx.createOscillator();
+          const pGain = audioCtx.createGain();
+          osc.type = p.type;
+          osc.frequency.setValueAtTime(freq * p.ratio, now);
+          pGain.gain.value = p.gain;
+          osc.connect(pGain);
+          pGain.connect(pipeFilter);
+          osc.start(now);
+          registerOsc(osc, p.ratio);
+        });
+
+        applyVoiceEnvelope({ peak: 0.075 * volumeScale, attack: 0.055, isPercussive: false, triggerDur: 1.3 });
+
+      } else if (preset === "celesta") {
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const osc2Gain = audioCtx.createGain();
+
+        osc1.type = "sine";
+        osc1.frequency.setValueAtTime(freq * 2, now);
+        osc2.type = "sine";
+        osc2.frequency.setValueAtTime(freq * 6, now);
+        osc2Gain.gain.setValueAtTime(0.06 * volumeScale, now);
+        osc2Gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+
+        osc1.connect(voiceGain);
+        osc2.connect(osc2Gain);
+        osc2Gain.connect(voiceGain);
+
+        osc1.start(now); registerOsc(osc1, 2.0);
+        osc2.start(now); registerOsc(osc2, 6.0);
+
+        applyVoiceEnvelope({ peak: 0.11 * volumeScale, attack: 0.006, isPercussive: true, sustainDur: 2.3, triggerDur: 1.15 });
+
+      } else if (preset === "epiano") {
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const bell = audioCtx.createOscillator();
+        const bellGain = audioCtx.createGain();
+
+        osc1.type = "triangle";
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.type = "sine";
+        osc2.frequency.setValueAtTime(freq * 1.002, now);
+
+        bell.type = "sine";
+        bell.frequency.setValueAtTime(freq * 2, now);
+        bellGain.gain.setValueAtTime(0.035 * volumeScale, now);
+        bellGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+
+        osc1.connect(voiceGain);
+        osc2.connect(voiceGain);
+        bell.connect(bellGain);
+        bellGain.connect(voiceGain);
+
+        osc1.start(now); registerOsc(osc1, 1.0);
+        osc2.start(now); registerOsc(osc2, 1.002);
+        bell.start(now); registerOsc(bell, 2.0);
+
+        applyVoiceEnvelope({ peak: 0.095 * volumeScale, attack: 0.02, isPercussive: false, triggerDur: 1.2 });
+
+      } else if (preset === "kalimba") {
+        const osc1 = audioCtx.createOscillator();
+        const overtone = audioCtx.createOscillator();
+        const overGain = audioCtx.createGain();
+
+        osc1.type = "sine";
+        osc1.frequency.setValueAtTime(freq, now);
+        overtone.type = "triangle";
+        overtone.frequency.setValueAtTime(freq * 2.98, now);
+        overGain.gain.setValueAtTime(0.05 * volumeScale, now);
+        overGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+
+        osc1.connect(voiceGain);
+        overtone.connect(overGain);
+        overGain.connect(voiceGain);
+
+        osc1.start(now);     registerOsc(osc1, 1.0);
+        overtone.start(now); registerOsc(overtone, 2.98);
+
+        applyVoiceEnvelope({ peak: 0.12 * volumeScale, attack: 0.01, isPercussive: true, sustainDur: 1.8, triggerDur: 0.92 });
+
+      } else {
+        // Warm Ambient Pad (Default fallback)
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const padFilter = audioCtx.createBiquadFilter();
+
+        padFilter.type = "lowpass";
+        padFilter.frequency.setValueAtTime(1000, now);
+
+        osc1.type = "sawtooth";
+        osc1.frequency.setValueAtTime(freq * 0.996, now);
+        osc2.type = "triangle";
+        osc2.frequency.setValueAtTime(freq * 1.004, now);
+
+        osc1.connect(padFilter);
+        osc2.connect(padFilter);
+        padFilter.connect(voiceGain);
+
+        osc1.start(now); registerOsc(osc1, 0.996);
+        osc2.start(now); registerOsc(osc2, 1.004);
+
+        applyVoiceEnvelope({ peak: 0.075 * volumeScale, attack: isSustain ? 0.22 : 0.07, isPercussive: false, triggerDur: 1.4 });
+      }
+
+      voiceController = {
+        setSemitoneOffset: (semitones) => {
+          if (!audioCtx) return;
+          const t = audioCtx.currentTime;
+          const ratio = Math.pow(2, semitones / 12);
+          trackedOscs.forEach(({ osc, mult }) => {
+            try {
+              osc.frequency.setTargetAtTime(baseFreq * mult * ratio, t, 0.014);
+            } catch (_) {}
+          });
+        },
+        stop: (immediate = false) => {
+          const t = audioCtx.currentTime;
+          const rel = immediate ? 0.025 : getSustainSettings().releaseSec;
+          if (!immediate && voiceController) {
+            activeLingeringVoices.add(voiceController);
+          } else if (voiceController) {
+            activeLingeringVoices.delete(voiceController);
+          }
+          voiceGain.gain.cancelScheduledValues(t);
+          voiceGain.gain.setValueAtTime(Math.max(voiceGain.gain.value, 0.0001), t);
+          voiceGain.gain.exponentialRampToValueAtTime(0.0001, t + rel);
+          const stopAt = t + rel + 0.03;
+          trackedOscs.forEach(({ osc }) => {
+            try { osc.stop(stopAt); } catch (_) {}
+          });
+          extraStopOscs.forEach(osc => {
+            try { osc.stop(stopAt); } catch (_) {}
+          });
+          scheduleNodeCleanup(stopAt);
+        }
+      };
+
+      return voiceController;
+    }
+
+    function playChordTrigger(midiList, initialShifts = null) {
+      const scale = 1.55 / Math.sqrt(Math.max(midiList.length, 3));
+      const voices = [];
+      midiList.forEach((m, idx) => {
+        const shift = initialShifts ? (initialShifts[idx] || 0) : 0;
+        setTimeout(() => {
+          const v = createSynthVoice(midiToFreq(m), false, scale, shift);
+          if (v) {
+            voices.push(v);
+            activeLingeringVoices.add(v);
+          }
+        }, idx * 16);
+      });
+      return voices;
+    }
+
+    function setChordSustain(voiceArray, index, midiList, isRaised, initialShifts = null) {
+      if (isRaised && !voiceArray[index]) {
+        const scale = 1.45 / Math.sqrt(Math.max(midiList.length, 3));
+        voiceArray[index] = midiList.map((m, idx) => {
+          const shift = initialShifts ? (initialShifts[idx] || 0) : 0;
+          return createSynthVoice(midiToFreq(m), true, scale, shift);
+        });
+      } else if (!isRaised && voiceArray[index]) {
+        voiceArray[index].forEach(v => v && v.stop(false));
+        voiceArray[index] = null;
+      }
+    }
+
+    function updateFilterByHandY(yNorm) {
+      if (!masterFilter || !filterToggle.checked) return;
+      const clamped = Math.min(0.85, Math.max(0.15, yNorm));
+      const ratio = 1 - (clamped - 0.15) / 0.70;
+      const freq = Math.round(280 * Math.pow(4800 / 280, ratio));
+      masterFilter.frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.05);
+      filterHud.textContent = `Filter: ${freq.toLocaleString()} Hz`;
+    }
+
+    // =========================================================================
+    // เส้นคลื่นเสียงบางและพริ้วไหวตามเสียงคอร์ดที่เล่น (Silky Real-Time Waveform)
+    // =========================================================================
+    function drawAudioWaveform() {
+      const cw = canvas.width;
+      const ch = canvas.height;
+      if (!cw || !ch) return;
+
+      wavePhase += 0.082;
+      let rawEnergy = 0;
+
+      if (analyserNode && waveTimeData && waveFreqData) {
+        analyserNode.getByteTimeDomainData(waveTimeData);
+        analyserNode.getByteFrequencyData(waveFreqData);
+
+        let sumSq = 0;
+        for (let i = 0; i < waveTimeData.length; i++) {
+          const norm = (waveTimeData[i] - 128) / 128;
+          sumSq += norm * norm;
+        }
+        const rms = Math.sqrt(sumSq / waveTimeData.length);
+        rawEnergy = Math.min(1, rms * 5.8);
+      }
+
+      const lerpRate = rawEnergy > smoothedWaveEnergy ? 0.28 : 0.085;
+      smoothedWaveEnergy += (rawEnergy - smoothedWaveEnergy) * lerpRate;
+      const e = smoothedWaveEnergy;
+
+      const startX = cw * 0.12;
+      const endX = cw * 0.88;
+      const spanW = endX - startX;
+      const baseY = ch * 0.81;
+      const segments = 140;
+
+      const buildSilkyPoints = (phaseOffset, speedMult, waveDensity, ampScale, freqWeight) => {
+        const pts = [];
+        for (let i = 0; i <= segments; i++) {
+          const t = i / segments;
+          const x = startX + t * spanW;
+          const envelope = Math.pow(Math.sin(Math.PI * t), 2.35);
+
+          let displacement = 0;
+          if (analyserNode && waveTimeData && waveFreqData && e > 0.004) {
+            const tdIdx = Math.min(waveTimeData.length - 1, Math.floor(t * (waveTimeData.length - 1)));
+            const fdIdx = Math.min(44, Math.floor(t * 44));
+            const rawWave = (waveTimeData[tdIdx] - 128) / 128;
+            const binMag = (waveFreqData[fdIdx] / 255) * freqWeight;
+
+            const ripplePrimary = Math.sin(t * waveDensity - wavePhase * speedMult + phaseOffset);
+            const rippleSecondary = Math.cos(t * (waveDensity * 1.65) + wavePhase * (speedMult * 1.35) - phaseOffset * 0.7);
+            const silkRipple = (ripplePrimary * 0.68 + rippleSecondary * 0.32) * (0.45 + binMag * 1.15);
+
+            displacement = (rawWave * 0.95 + silkRipple * e * 1.45) * 34 * ampScale;
+          } else {
+            const idleBreeze =
+              Math.sin(t * 10 - wavePhase * 0.45 + phaseOffset) * 0.95 +
+              Math.cos(t * 17 + wavePhase * 0.32 - phaseOffset) * 0.45;
+            displacement = idleBreeze * ampScale;
+          }
+
+          const y = baseY + displacement * envelope;
+          pts.push({ x, y });
+        }
+        return pts;
+      };
+
+      const strokeSilkRibbon = (pts, strokeStyle, lineWidth) => {
+        if (pts.length < 2) return;
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 1; i < pts.length - 1; i++) {
+          const xc = (pts[i].x + pts[i + 1].x) / 2;
+          const yc = (pts[i].y + pts[i + 1].y) / 2;
+          ctx.quadraticCurveTo(pts[i].x, pts[i].y, xc, yc);
+        }
+        const last = pts[pts.length - 1];
+        ctx.lineTo(last.x, last.y);
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = lineWidth;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.stroke();
+        ctx.restore();
+      };
+
+      const isPlaying = e > 0.015;
+
+      // เส้นใยชั้นที่ 3: เส้นฟุ้งสีส้มพาสเทลอ่อนบางเบา
+      const shimmerStrand = buildSilkyPoints(2.1, 1.25, 22, 1.15, 0.75);
+      strokeSilkRibbon(
+        shimmerStrand,
+        isPlaying ? "rgba(253, 186, 116, 0.58)" : "rgba(254, 215, 170, 0.32)",
+        isPlaying ? 0.75 : 0.55
+      );
+
+      // เส้นใยชั้นที่ 2: เส้นฮาร์มอนิกสีส้มพาสเทลพริ้วไหว
+      const peachStrand = buildSilkyPoints(1.05, 1.05, 18, 1.02, 0.95);
+      strokeSilkRibbon(
+        peachStrand,
+        isPlaying ? "rgba(234, 88, 12, 0.56)" : "rgba(251, 146, 60, 0.38)",
+        isPlaying ? 0.95 : 0.65
+      );
+
+      // เส้นใยหลัก: เส้นบางเฉียบโทนสีดำเฟดจางๆ พริ้วตามคอร์ด
+      const mainStrand = buildSilkyPoints(0, 0.92, 15, 0.94, 1.1);
+      strokeSilkRibbon(
+        mainStrand,
+        isPlaying ? "rgba(28, 25, 23, 0.66)" : "rgba(28, 25, 23, 0.28)",
+        isPlaying ? 1.15 : 0.75
+      );
+    }
+
+    // =========================================================================
+    // คำนวณการยกเสียงสูงแบบไม่หลุดคีย์ (ล็อกการทำงาน 100%)
+    // =========================================================================
+    function computeInKeyVoicing(baseY, currentY, noteCount, prevStep) {
+      const mode = pitchLiftSelect.value;
+      if (mode === "off" || baseY === null || currentY === null || noteCount <= 0) {
+        return { step: 0, shifts: new Array(noteCount).fill(0), label: "" };
+      }
+
+      const deltaUp = baseY - currentY;
+      const deadzone = 0.035;
+      const maxTravel = 0.34;
+
+      const maxSteps = mode === "octave"
+        ? 2
+        : (mode === "inversion24" ? noteCount * 2 : noteCount);
+
+      const norm = deltaUp <= deadzone ? 0 : Math.min(1, (deltaUp - deadzone) / maxTravel);
+      const rawStep = norm * maxSteps;
+
+      let step = Math.min(prevStep, maxSteps);
+      while (step < maxSteps && rawStep >= (step + 1) - 0.15) {
+        step++;
+      }
+      while (step > 0 && rawStep < step - 0.35) {
+        step--;
+      }
+
+      if (mode === "octave") {
+        const octSemis = step * 12;
+        const shifts = new Array(noteCount).fill(octSemis);
+        const label = step === 0 ? "" : (step === 1 ? "+1 Octave" : "+2 Octaves");
+        return { step, shifts, label };
+      }
+
+      const octaves = Math.floor(step / noteCount);
+      const rem = step % noteCount;
+      const shifts = [];
+      for (let j = 0; j < noteCount; j++) {
+        shifts.push((j < rem ? octaves + 1 : octaves) * 12);
+      }
+
+      let label = "";
+      if (step > 0) {
+        if (rem === 0) {
+          label = octaves === 1 ? "+1 Octave (ตรงคีย์)" : `+${octaves} Octaves (ตรงคีย์)`;
+        } else if (octaves === 0) {
+          label = `สูงในคอร์ด (${rem}/${noteCount})`;
+        } else {
+          label = `+${octaves} Oct + ในคอร์ด (${rem}/${noteCount})`;
+        }
+      }
+
+      return { step, shifts, label };
+    }
+
+    function syncHandSide(side, states, tracker, handY = null) {
+      const style = playStyleSelect.value;
+      const now = performance.now();
+      let currentLiftLabel = "";
+
+      states.forEach((isRaised, i) => {
+        const slotEl = document.getElementById(`slot-${side}-${i}`);
+        const hudPillEl = document.getElementById(`hud-pill-${side}-${i}`);
+        const meterEl = document.getElementById(`meter-${side}-${i}`);
+        if (slotEl) slotEl.classList.toggle("active", isRaised);
+        if (hudPillEl) hudPillEl.classList.toggle("active", isRaised);
+        if (meterEl) meterEl.style.width = `${Math.round(tracker.scores[i])}%`;
+
+        const chordKey = customMap[side][i];
+        const chord = chordKey ? CHORD_DB[chordKey] : null;
+
+        if (!chord) {
+          tracker.baseY[i] = null;
+          tracker.voicingStep[i] = 0;
+          tracker.voicingLabels[i] = "";
+          if (tracker.sustainVoices[i]) {
+            tracker.sustainVoices[i].forEach(v => v && v.stop(false));
+            tracker.sustainVoices[i] = null;
+          }
+          tracker.triggerVoices[i] = null;
+          tracker.prevPlayedStates[i] = isRaised;
+          return;
+        }
+
+        let voicing = { step: 0, shifts: new Array(chord.midi.length).fill(0), label: "" };
+
+        if (isRaised && handY !== null) {
+          if (tracker.baseY[i] === null) {
+            tracker.baseY[i] = handY;
+          }
+          voicing = computeInKeyVoicing(
+            tracker.baseY[i],
+            handY,
+            chord.midi.length,
+            tracker.voicingStep[i]
+          );
+          tracker.voicingStep[i] = voicing.step;
+          tracker.voicingLabels[i] = voicing.label;
+          if (voicing.label) {
+            currentLiftLabel = voicing.label;
+          }
+        } else {
+          tracker.baseY[i] = null;
+          tracker.voicingStep[i] = 0;
+          tracker.voicingLabels[i] = "";
+        }
+
+        if (style === "trigger") {
+          if (tracker.sustainVoices[i]) setChordSustain(tracker.sustainVoices, i, chord.midi, false);
+          if (isRaised && !tracker.prevPlayedStates[i] && now - tracker.lastTriggerTimes[i] > 120) {
+            tracker.triggerVoices[i] = playChordTrigger(chord.midi, voicing.shifts);
+            tracker.lastTriggerTimes[i] = now;
+          } else if (isRaised && tracker.triggerVoices[i]) {
+            tracker.triggerVoices[i].forEach((v, idx) => v && v.setSemitoneOffset(voicing.shifts[idx] || 0));
+          } else if (!isRaised) {
+            tracker.triggerVoices[i] = null;
+          }
+        } else {
+          setChordSustain(tracker.sustainVoices, i, chord.midi, isRaised, voicing.shifts);
+          if (isRaised && tracker.sustainVoices[i]) {
+            tracker.sustainVoices[i].forEach((v, idx) => v && v.setSemitoneOffset(voicing.shifts[idx] || 0));
+          }
+        }
+        tracker.prevPlayedStates[i] = isRaised;
+      });
+
+      tracker.activeLiftLabel = currentLiftLabel;
+      updateLiveChordPill();
+    }
+
+    function stopAllSustains(immediate = false) {
+      [leftTracker, rightTracker].forEach((tracker, sideIdx) => {
+        const side = sideIdx === 0 ? "left" : "right";
+        resetHandTracker(tracker);
+        for (let i = 0; i < 5; i++) {
+          if (tracker.sustainVoices[i]) {
+            tracker.sustainVoices[i].forEach(v => v && v.stop(immediate));
+            tracker.sustainVoices[i] = null;
+          }
+          tracker.triggerVoices[i] = null;
+          tracker.prevPlayedStates[i] = false;
+          const slot = document.getElementById(`slot-${side}-${i}`);
+          const hudPill = document.getElementById(`hud-pill-${side}-${i}`);
+          const meter = document.getElementById(`meter-${side}-${i}`);
+          if (slot) slot.classList.remove("active");
+          if (hudPill) hudPill.classList.remove("active");
+          if (meter) meter.style.width = "0%";
+        }
+      });
+      if (immediate) {
+        activeLingeringVoices.forEach(v => {
+          try { v.stop(true); } catch (_) {}
+        });
+        activeLingeringVoices.clear();
+      }
+      updateLiveChordPill();
+    }
+
+    // วาดโครงมือ จุดปลายนิ้ว และป้ายแสดงระดับเสียงในคอร์ด
+    function drawHand(landmarks, activeStates, tracker, color = "#fb923c") {
+      const vw = video.videoWidth || 640;
+      const vh = video.videoHeight || 480;
+      const cw = canvas.width;
+      const ch = canvas.height;
+      const videoRatio = vw / vh;
+      const canvasRatio = cw / ch;
+
+      let drawW = cw, drawH = ch, offsetX = 0, offsetY = 0;
+      if (videoRatio > canvasRatio) {
+        drawH = ch;
+        drawW = ch * videoRatio;
+        offsetX = (cw - drawW) / 2;
+      } else {
+        drawW = cw;
+        drawH = cw / videoRatio;
+        offsetY = (ch - drawH) / 2;
+      }
+
+      const mapX = (x) => offsetX + x * drawW;
+      const mapY = (y) => offsetY + y * drawH;
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.6;
+      for (const [a, b] of HAND_CONNECTIONS) {
+        ctx.beginPath();
+        ctx.moveTo(mapX(landmarks[a].x), mapY(landmarks[a].y));
+        ctx.lineTo(mapX(landmarks[b].x), mapY(landmarks[b].y));
+        ctx.stroke();
+      }
+
+      const litTips = new Set();
+      if (activeStates[0]) litTips.add(4);
+      if (activeStates[1]) litTips.add(8);
+      if (activeStates[2]) { litTips.add(8); litTips.add(12); }
+      if (activeStates[3]) { litTips.add(4); litTips.add(20); }
+      if (activeStates[4]) litTips.add(20);
+
+      const tipIndices = [4, 8, 12, 16, 20];
+      landmarks.forEach((pt, idx) => {
+        const isTip = tipIndices.includes(idx);
+        const isActiveTip = litTips.has(idx);
+
+        ctx.fillStyle = isActiveTip ? "#fdba74" : (isTip ? "rgba(255, 247, 237, 0.88)" : "#fffaf5");
+        ctx.beginPath();
+        ctx.arc(
+          mapX(pt.x),
+          mapY(pt.y),
+          isActiveTip ? 8 : (isTip ? 4.5 : 2.8),
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+
+        if (isActiveTip) {
+          ctx.strokeStyle = "rgba(28, 25, 23, 0.72)";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      });
+
+      if (tracker.activeLiftLabel) {
+        let minY = 1;
+        landmarks.forEach(pt => { if (pt.y < minY) minY = pt.y; });
+
+        const labelX = mapX(landmarks[9].x);
+        const labelY = Math.max(28, mapY(minY) - 18);
+        const text = tracker.activeLiftLabel;
+
+        ctx.save();
+        ctx.translate(labelX, labelY);
+        ctx.scale(-1, 1);
+
+        ctx.font = "700 13px 'Plus Jakarta Sans', 'Noto Sans Thai', sans-serif";
+        const padX = 11;
+        const textW = ctx.measureText(text).width;
+        const boxW = textW + padX * 2;
+        const boxH = 26;
+
+        ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
+        ctx.strokeStyle = "rgba(234, 88, 12, 0.45)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(-boxW / 2, -boxH / 2, boxW, boxH, 999);
+        } else {
+          ctx.rect(-boxW / 2, -boxH / 2, boxW, boxH);
+        }
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#9a3412";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(text, 0, 1);
+        ctx.restore();
+      }
+    }
+
+    function assignHandsToLeftAndRight(detectedHands) {
+      if (detectedHands.length === 0) return { left: null, right: null };
+
+      if (detectedHands.length === 1) {
+        const hand = detectedHands[0];
+        if (leftTracker.lastPalmPos && !rightTracker.lastPalmPos && leftTracker.missingFrames < 8) {
+          if (Math.hypot(hand.x - leftTracker.lastPalmPos.x, hand.y - leftTracker.lastPalmPos.y) < 0.25) {
+            return { left: hand, right: null };
+          }
+        }
+        if (rightTracker.lastPalmPos && !leftTracker.lastPalmPos && rightTracker.missingFrames < 8) {
+          if (Math.hypot(hand.x - rightTracker.lastPalmPos.x, hand.y - rightTracker.lastPalmPos.y) < 0.25) {
+            return { left: null, right: hand };
+          }
+        }
+        return hand.x >= 0.5 ? { left: hand, right: null } : { left: null, right: hand };
+      }
+
+      const sorted = [...detectedHands].sort((a, b) => b.x - a.x);
+      return { left: sorted[0], right: sorted[1] };
+    }
+
+    // =========================================================================
+    // ตั้งค่า MediaPipe Hand Landmarker & กล้อง
+    // =========================================================================
+    async function initMediaPipe() {
+      statusEl.textContent = "สถานะ: กำลังโหลด AI ตรวจจับนิ้วมือ...";
+      const vision = await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
+      );
+      handLandmarker = await HandLandmarker.createFromOptions(vision, {
+        baseOptions: {
+          modelAssetPath:
+            "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+          delegate: "GPU"
+        },
+        runningMode: "VIDEO",
+        numHands: 2,
+        minHandDetectionConfidence: 0.72,
+        minHandPresenceConfidence: 0.72,
+        minTrackingConfidence: 0.72
+      });
+    }
+
+    async function populateCameras() {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(d => d.kind === "videoinput");
+      cameraSelect.innerHTML = "";
+      videoDevices.forEach((d, idx) => {
+        const opt = document.createElement("option");
+        opt.value = d.deviceId;
+        opt.textContent = d.label || `กล้องตัวที่ ${idx + 1}`;
+        cameraSelect.appendChild(opt);
+      });
+      if (videoDevices.length > 1) {
+        cameraSelect.style.display = "inline-block";
+      }
+    }
+
+    async function startWebcam(deviceId = null) {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+      stopAllSustains(true);
+
+      const constraints = {
+        video: deviceId
+          ? { deviceId: { exact: deviceId }, width: 1280, height: 720 }
+          : { facingMode: "user", width: 1280, height: 720 }
+      };
+
+      currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+      video.srcObject = currentStream;
+
+      return new Promise((resolve) => {
+        video.onloadedmetadata = () => {
+          syncCanvasSize();
+          resolve();
+        };
+      });
+    }
+
+    function detectLoop() {
+      syncCanvasSize();
+
+      if (video.currentTime !== lastVideoTime) {
+        lastVideoTime = video.currentTime;
+        const now = performance.now();
+        const timestamp = now > lastDetectTimestamp ? now : lastDetectTimestamp + 1;
+        lastDetectTimestamp = timestamp;
+
+        const results = handLandmarker.detectForVideo(video, timestamp);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const detectedHands = [];
+        if (results.landmarks && results.landmarks.length > 0) {
+          results.landmarks.forEach((landmarks) => {
+            detectedHands.push({
+              landmarks,
+              x: landmarks[9].x,
+              y: landmarks[9].y
+            });
+          });
+        }
+
+        const { left: leftHand, right: rightHand } = assignHandsToLeftAndRight(detectedHands);
+
+        if (leftHand) {
+          leftTracker.missingFrames = 0;
+          leftTracker.lastPalmPos = { x: leftHand.x, y: leftHand.y };
+          const states = evaluateHandFingers(leftHand.landmarks, leftTracker);
+          syncHandSide("left", states, leftTracker, leftHand.y);
+          drawHand(leftHand.landmarks, states, leftTracker, "#ea580c");
+        } else {
+          leftTracker.missingFrames++;
+          if (leftTracker.missingFrames > 6) {
+            resetHandTracker(leftTracker);
+            syncHandSide("left", [false, false, false, false, false], leftTracker, null);
+          }
+        }
+
+        if (rightHand) {
+          rightTracker.missingFrames = 0;
+          rightTracker.lastPalmPos = { x: rightHand.x, y: rightHand.y };
+          const states = evaluateHandFingers(rightHand.landmarks, rightTracker);
+          syncHandSide("right", states, rightTracker, rightHand.y);
+          drawHand(rightHand.landmarks, states, rightTracker, "rgba(28, 25, 23, 0.72)");
+        } else {
+          rightTracker.missingFrames++;
+          if (rightTracker.missingFrames > 6) {
+            resetHandTracker(rightTracker);
+            syncHandSide("right", [false, false, false, false, false], rightTracker, null);
+          }
+        }
+
+        const handsForFilter = [];
+        if (leftHand) handsForFilter.push(leftHand.y);
+        if (rightHand) handsForFilter.push(rightHand.y);
+        if (handsForFilter.length > 0) {
+          const avgY = handsForFilter.reduce((a, b) => a + b, 0) / handsForFilter.length;
+          updateFilterByHandY(avgY);
+        }
+
+        drawAudioWaveform();
+      }
+      requestAnimationFrame(detectLoop);
+    }
+
+    // =========================================================================
+    // Event Listeners
+    // =========================================================================
+    initCenterNoteWidget();
+    renderFingerSlots();
+    renderRootTabs();
+    renderChordZones();
+
+    window.addEventListener("resize", syncCanvasSize);
+
+    fullscreenBtn.addEventListener("click", toggleFullscreen);
+    document.addEventListener("fullscreenchange", updateFullscreenUI);
+    document.addEventListener("webkitfullscreenchange", updateFullscreenUI);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && isSimulatedFullscreen) {
+        isSimulatedFullscreen = false;
+        updateFullscreenUI();
+      }
+    });
+
+    fingerMapFab.addEventListener("click", () => setFingerHudOpen(true));
+    drawerCloseBtn.addEventListener("click", () => setFingerHudOpen(false));
+
+    toggleStudioBtn.addEventListener("click", () => {
+      const isHidden = studioPanel.style.display === "none";
+      studioPanel.style.display = isHidden ? "flex" : "none";
+      toggleStudioBtn.classList.toggle("active", isHidden);
+      toggleStudioBtn.innerHTML = isHidden
+        ? `${ICON_GRID_SVG}<span>ซ่อนคลังคอร์ด</span>`
+        : `${ICON_GRID_SVG}<span>เปิดคลังคอร์ด</span>`;
+    });
+
+    document.getElementById("presetBasicBtn").addEventListener("click", () => {
+      stopAllSustains(true);
+      customMap = structuredClone(DEFAULT_BASIC_MAP);
+      saveCustomMap();
+      renderFingerSlots();
+    });
+
+    document.getElementById("presetAdd9Btn").addEventListener("click", () => {
+      stopAllSustains(true);
+      customMap = structuredClone(DEFAULT_ADD9_MAP);
+      saveCustomMap();
+      renderFingerSlots();
+    });
+
+    document.getElementById("presetJazz7Btn").addEventListener("click", () => {
+      stopAllSustains(true);
+      customMap = structuredClone(DEFAULT_JAZZ7_MAP);
+      saveCustomMap();
+      renderFingerSlots();
+    });
+
+    document.getElementById("clearAllBtn").addEventListener("click", () => {
+      stopAllSustains(true);
+      customMap = { left: [null, null, null, null, null], right: [null, null, null, null, null] };
+      saveCustomMap();
+      renderFingerSlots();
+    });
+
+    chordSearchInput.addEventListener("input", renderChordZones);
+    playStyleSelect.addEventListener("change", () => stopAllSustains(true));
+    presetSelect.addEventListener("change", () => stopAllSustains(true));
+    soloFingerToggle.addEventListener("change", () => stopAllSustains(true));
+    stabilitySelect.addEventListener("change", () => stopAllSustains(true));
+    pitchLiftSelect.addEventListener("change", () => stopAllSustains(true));
+
+    sustainSlider.addEventListener("input", (e) => {
+      const val = Number(e.target.value);
+      document.getElementById("sustainVal").textContent = `${val}%`;
+      if (val === 0) {
+        stopAllSustains(true);
+      }
+    });
+
+    reverbSlider.addEventListener("input", (e) => {
+      const val = e.target.value;
+      document.getElementById("reverbVal").textContent = `${val}%`;
+      if (reverbGain && audioCtx) {
+        reverbGain.gain.setTargetAtTime(val / 100, audioCtx.currentTime, 0.04);
+      }
+    });
+
+    delaySlider.addEventListener("input", (e) => {
+      const val = e.target.value;
+      document.getElementById("delayVal").textContent = `${val}%`;
+      if (delayGain && audioCtx) {
+        delayGain.gain.setTargetAtTime((val / 100) * 0.6, audioCtx.currentTime, 0.04);
+      }
+    });
+
+    filterToggle.addEventListener("change", () => {
+      if (!masterFilter || !audioCtx) return;
+      if (!filterToggle.checked) {
+        masterFilter.frequency.setTargetAtTime(18000, audioCtx.currentTime, 0.05);
+        filterHud.textContent = "Filter: ปิด (เต็มย่าน)";
+      }
+    });
+
+    startBtn.addEventListener("click", async () => {
+      startBtn.disabled = true;
+      try {
+        await ensureAudioReady();
+        if (!handLandmarker) await initMediaPipe();
+        await startWebcam(cameraSelect.value || null);
+        await populateCameras();
+        statusEl.textContent = "สถานะ: พร้อมเล่น! ชูนิ้วค้างได้เต็มที่";
+        if (!isLoopRunning) {
+          isLoopRunning = true;
+          detectLoop();
+        }
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = `เกิดข้อผิดพลาด: ${err.message}`;
+        startBtn.disabled = false;
+      }
+    });
+
+    cameraSelect.addEventListener("change", async () => {
+      await startWebcam(cameraSelect.value);
+    });
+  </script>
+</body>
+</html>
